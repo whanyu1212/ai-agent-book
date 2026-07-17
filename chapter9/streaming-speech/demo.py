@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-实验 9-4：模拟流式语音感知（Streaming Speech Perception）
+实验 9-3：模拟流式语音感知（Streaming Speech Perception）
 
 书中原实验用 Qwen2-Audio 做"分块输入模拟流式处理"，把连续音频切成小块，
 每块连同此前累积的音频上下文一起送入模型，逐步产出文本，并测量每块的延迟；
@@ -137,7 +137,7 @@ def transcribe(client, path: Path) -> str:
 
 def parse_args():
     p = argparse.ArgumentParser(
-        description="实验 9-4：模拟流式语音感知。用 TTS 合成一句中文，再按递增前缀"
+        description="实验 9-3：模拟流式语音感知。用 TTS 合成一句中文，再按递增前缀"
                     "长度切块逐块调 Whisper 识别，复现「早期分块因缺后文而误识别、"
                     "随音频累积收敛」的延迟 vs 准确率权衡，并与整段识别对照。",
         formatter_class=argparse.RawDescriptionHelpFormatter,

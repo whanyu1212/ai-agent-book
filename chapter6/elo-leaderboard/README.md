@@ -1,6 +1,6 @@
 # Elo Rating Leaderboard from Pairwise Comparisons
 
-**Experiment 6.8**: Building Model Leaderboard from Pairwise Comparison Data
+**Experiment 6-6**: Building Model Leaderboard from Pairwise Comparison Data
 
 This project implements an Elo rating system from scratch to analyze model performance using Chatbot Arena's public voting data. The implementation demonstrates how the Bradley-Terry model extracts relative model capabilities from millions of pairwise comparison votes.
 

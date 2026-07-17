@@ -1,6 +1,6 @@
-# 实验 9-4：模拟流式语音感知（Streaming Speech Perception）
+# 实验 9-3：模拟流式语音感知（Streaming Speech Perception）
 
-配套《深入理解 AI Agent》第 9 章「实验 9-4：使用 Qwen2-Audio 模拟流式语音感知」。
+配套《深入理解 AI Agent》第 9 章「实验 9-3：使用 Qwen2-Audio 模拟流式语音感知」。
 
 ## 目的
 
