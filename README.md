@@ -9,8 +9,8 @@
 全书提供中英双语版本：
 
 - **中文 PDF（原版）**：[`book/深入理解-AI-Agent-李博杰-v1.1.pdf`](book/深入理解-AI-Agent-李博杰-v1.1.pdf)
-- **英文 PDF**（社区贡献翻译，by [@nsdevaraj](https://github.com/nsdevaraj)）：[`book-en/Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1.pdf`](book-en/Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1.pdf)
-- **泰米尔语 PDF**（社区贡献翻译，by [@nsdevaraj](https://github.com/nsdevaraj)）：[`book-ta/Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1-ta.pdf`](book-ta/Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1-ta.pdf)
+- **英文 PDF**（社区贡献翻译，by [@nsdevaraj](https://github.com/nsdevaraj)）：[`book-en/AI-Agents-in-Depth-Bojie-Li-v1.1.pdf`](book-en/AI-Agents-in-Depth-Bojie-Li-v1.1.pdf)
+- **泰米尔语 PDF**（社区贡献翻译，by [@nsdevaraj](https://github.com/nsdevaraj)）：[`book-ta/AI-Agents-in-Depth-Bojie-Li-v1.1-ta.pdf`](book-ta/AI-Agents-in-Depth-Bojie-Li-v1.1-ta.pdf)
 
 中文正文与编译好的 PDF 位于 [`book/`](book/) 目录；英文与泰米尔语翻译为**社区贡献**，分别位于 [`book-en/`](book-en/) 与 [`book-ta/`](book-ta/) 目录，内容可能滞后于中文原版：
 

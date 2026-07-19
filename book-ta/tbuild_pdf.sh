@@ -27,7 +27,7 @@ export extra_mem_bot=8000000
 #    immediately with the correct "not found" result.
 export MKTEXTFM=0
 
-OUT="Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1-ta.pdf"
+OUT="AI-Agents-in-Depth-Bojie-Li-v1.1-ta.pdf"
 CHAPTERS=(
     introduction.ta.md
     chapter1.ta.md
@@ -66,9 +66,9 @@ pandoc "${CHAPTERS[@]}" \
     -V classoption=lang=en \
     -V classoption=cyan \
     -V classoption=device=normal \
-    -V author="Li Bojie" \
-    --metadata title-meta="AI Agents குறித்த ஆழமான புரிதல்: வடிவமைப்பு கோட்பாடுகள் மற்றும் பொறியியல் நடைமுறைகள்" \
-    --metadata author-meta="Li Bojie (தமிழ் மொழிபெயர்ப்பு: Devaraj)" \
+    -V author="Bojie Li" \
+    --metadata title-meta="AI Agents ஆழத்தில்: வடிவமைப்பு கோட்பாடுகள் மற்றும் பொறியியல் நடைமுறைகள்" \
+    --metadata author-meta="Bojie Li (தமிழ் மொழிபெயர்ப்பு: Devaraj)" \
     -H preamble.tex \
     -H tamil-fonts.tex \
     --include-before-body=cover.tex \
