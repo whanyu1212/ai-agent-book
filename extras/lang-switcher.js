@@ -179,6 +179,41 @@
       return p.slice(0, idx);
     }
 
+    function collectPathCandidates(href, resolvedPath, base) {
+      var candidates = [];
+
+      function push(path) {
+        if (!path) return;
+        if (path.charAt(0) !== "/") path = "/" + path;
+        for (var i = 0; i < candidates.length; i++) {
+          if (candidates[i] === path) return;
+        }
+        candidates.push(path);
+      }
+
+      function add(value) {
+        if (!value) return;
+        var clean = value.split(/[?#]/)[0].replace(/\\/g, "/");
+        if (!clean) return;
+        while (clean.indexOf("../") === 0) clean = clean.slice(3);
+        while (clean.indexOf("./") === 0) clean = clean.slice(2);
+        if (base && base !== "/" && clean.indexOf(base) === 0) {
+          clean = "/" + clean.slice(base.length).replace(/^\//, "");
+        }
+        push(clean);
+
+        var knownPathRe = /(?:^|\/)((?:book(?:-[a-z]+)?|chapter\d+)(?:\/[^?#]*)?)/g;
+        var match;
+        while ((match = knownPathRe.exec(clean))) {
+          push(match[1]);
+        }
+      }
+
+      add(resolvedPath);
+      if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(href)) add(href);
+      return candidates;
+    }
+
     // ── sidebar rewriting (links + text) ──────────────────────
 
     function rewriteSidebar(targetCode) {
@@ -205,12 +240,12 @@
           try {
             var u = new URL(href, location.href);
             if (u.origin === location.origin) {
-              var linkPath = u.pathname;
-              if (linkPath.indexOf(base) === 0) {
-                var linkRel = "/" + linkPath.slice(base.length).replace(/^\//, "");
-                var translated = translatePath(linkRel, defCode, targetCode);
+              var candidates = collectPathCandidates(href, u.pathname, base);
+              for (var j = 0; j < candidates.length; j++) {
+                var translated = translatePath(candidates[j], defCode, targetCode);
                 if (translated) {
                   el.setAttribute("href", base + translated.replace(/^\//, ""));
+                  break;
                 }
               }
             }
