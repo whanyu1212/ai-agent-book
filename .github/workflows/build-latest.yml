@@ -40,12 +40,21 @@ jobs:
           echo "/Library/TeX/texbin" >> "$GITHUB_PATH"
 
       # PingFang is an on-demand font since macOS Sequoia and is absent on fresh
-      # runners; without it rsvg-convert renders Chinese figure text in Hiragino
-      # Sans (Japanese glyph variants). Fetch it so CI output matches local builds.
-      - name: Download on-demand Apple fonts
-        run: swift .github/scripts/download_apple_fonts.swift "PingFang SC" "PingFang TC"
+      # runners (only an unusable reserved UI copy exists); without it
+      # rsvg-convert renders Chinese figure text in a fallback font (Japanese
+      # glyph variants). Fetch the real font from Apple's asset CDN and index it
+      # for fontconfig.
+      - name: Install PingFang fonts
+        run: |
+          bash .github/scripts/install_apple_fonts.sh
+          fc-cache -f
 
+      # PANGOCAIRO_BACKEND=fontconfig: pango's CoreText backend on the runners
+      # cannot use the freshly installed user font and silently substitutes
+      # another CJK font in SVG figures; the fontconfig backend picks it up.
       - name: Build PDFs
+        env:
+          PANGOCAIRO_BACKEND: fontconfig
         run: |
           set -e
           for dir in book book-zhtw book-en book-vi book-ta; do
