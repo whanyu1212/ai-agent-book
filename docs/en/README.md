@@ -1,29 +1,32 @@
 # AI Agents in Depth: Design Principles and Engineering Practice
 
-[![Read online](https://img.shields.io/badge/🌐_Read_online-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![PDF](https://img.shields.io/badge/PDF-download-success.svg)](#-e-book) [![Languages](https://img.shields.io/badge/translations-6%20languages-informational.svg)](#-e-book)
+[![PDF](https://img.shields.io/badge/PDF-download-success.svg)](#-e-book) [![Read online](https://img.shields.io/badge/🌐_Read_online-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/translations-7%20languages-informational.svg)](#-e-book)
 
-**[中文](../../README.md) · [正體中文](../zh-TW/README.md) · English ← current · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md)**
+**[中文](../../README.md) · [正體中文](../zh-TW/README.md) · English ← current · [Русский](../ru/README.md) · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md) · [日本語](../ja/README.md)**
 
-> 🌐 **[Read online](https://bojieli.github.io/ai-agent-book/)** — Multi-language switcher, collapsible chapter tree, full-text search, and direct links to companion experiments. Auto-rebuilt on every push to main.
+> 📥 **[Download PDF / EPUB](#-e-book)** (recommended) — the PDF / EPUB editions offer the best reading experience; you can also [read online](https://bojieli.github.io/ai-agent-book/) (multi-language switcher, collapsible chapter tree, full-text search, auto-rebuilt on every push to main).
 
 **Agent = LLM + Context + Tools** — This book builds on this core formula across 10 chapters, taking AI Agents from principles to engineering practice. The full text, illustrations, and **92 accompanying experiments** are all open source. You are welcome to run the experiments yourself.
 
-| 📚 **10 chapters** of text, from basics to production | 📂 **92** companion projects (70+ standalone) | 🌐 **6 languages**: CN / zh-TW / EN / RU / TA / VI |
+| 📚 **10 chapters** of text, from basics to production | 📂 **92** companion projects (70+ standalone) | 🌐 **7 languages**: CN / zh-TW / EN / RU / TA / VI / JA |
 | :---: | :---: | :---: |
 
 ## 📖 E-Book
 
-> 📥 **Download** (full text, free and open source). These links always point to the latest build of the `main` branch; fixed editions are on the [Releases](https://github.com/bojieli/ai-agent-book/releases) page:
+> 📥 **Download** (recommended; full text, free and open source). These links always point to the latest build of the `main` branch; fixed editions are on the [Releases](https://github.com/bojieli/ai-agent-book/releases) page:
 > - **Chinese (original)**: [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-CN.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-CN.epub)
 > - **Traditional Chinese (Taiwan)** (community translation, by [@tigercosmos](https://github.com/tigercosmos)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-TW.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-TW.epub)
 > - **English** (community translation, by [@nsdevaraj](https://github.com/nsdevaraj)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-en.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-en.epub)
 > - **Russian** (community translation, by [@ui99ru](https://github.com/ui99ru)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ru.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ru.epub)
 > - **Tamil** (community translation, by [@nsdevaraj](https://github.com/nsdevaraj)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.epub)
 > - **Vietnamese** (community translation, by [@toanalien](https://github.com/toanalien)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-vi.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-vi.epub)
+> - **Japanese** (community translation, by [@eltociear](https://github.com/eltociear)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ja.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ja.epub)
+>
+> 🌐 You can also [read online](https://bojieli.github.io/ai-agent-book/) — multi-language switcher, collapsible chapter tree, full-text search, and direct links to companion experiments. Auto-rebuilt on every push to main.
 
-Chinese text source is in [`book/`](../../book/); Traditional Chinese (Taiwan)/English/Russian/Tamil/Vietnamese versions are community contributions (may lag behind the Chinese original), located in [`book-zhtw/`](../../book-zhtw/), [`book-en/`](../../book-en/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/) respectively.
+Chinese text source is in [`book/`](../../book/); Traditional Chinese (Taiwan)/English/Russian/Tamil/Vietnamese/Japanese versions are community contributions (may lag behind the Chinese original), located in [`book-zhtw/`](../../book-zhtw/), [`book-en/`](../../book-en/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/), [`book-ja/`](../../book-ja/) respectively.
 
-The shared builder produces EPUB 3 editions for Simplified Chinese, Traditional Chinese (Taiwan), English, Russian, Tamil, and Vietnamese. See the [EPUB build instructions](../../EPUB.md).
+The shared builder produces EPUB 3 editions for Simplified Chinese, Traditional Chinese (Taiwan), English, Russian, Tamil, Vietnamese, and Japanese. See the [EPUB build instructions](../../EPUB.md).
 
 <details>
 <summary><b>🔧 Build the PDF yourself?</b> (requires pandoc / xelatex / ElegantBook)</summary>
@@ -64,13 +67,20 @@ The book is organized into three parts: Chapter 1 establishes the foundation; Ch
 
 It is recommended to apply for API keys from several platforms for convenient learning. See [this guide](https://01.me/2025/07/llm-api-setup/) for model selection.
 
-| Platform | Link | Notes |
-| --- | --- | --- |
-| **Kimi** (Moonshot) | <https://platform.moonshot.cn/> | Kimi series, strong in long context and Agent capabilities |
-| **Zhipu GLM** | <https://open.bigmodel.cn/> | GLM-4.6 etc., strong Chinese ability, cost-effective |
-| **Siliconflow** | <https://siliconflow.cn/> | Various open-source models (DeepSeek, Qwen, etc.) |
-| **Krill AI** | <https://www.krill-ai.com/> | One-stop access to major global and China-domestic models (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax), with both global and China mainland access endpoints |
-| **OpenRouter** | <https://openrouter.ai/> | One-stop access to Gemini / Claude / GPT-5 etc., with global access endpoints |
+| Platform | Link | Notes | Access endpoints |
+| --- | --- | --- | --- |
+| **Kimi** (Moonshot) | <https://platform.moonshot.cn/> | Kimi series, strong in long context and Agent capabilities | Mainland China |
+| **Zhipu GLM** | <https://open.bigmodel.cn/> | GLM-4.6 etc., strong Chinese ability, cost-effective | Mainland China |
+| **Siliconflow** | <https://siliconflow.cn/> | Various open-source models (DeepSeek, Qwen, etc.), fast access from mainland China | Mainland China |
+| **DeepSeek** | <https://platform.deepseek.com/> | Official DeepSeek API | Global + Mainland China |
+| **Krill AI** | [www.krill-ai.com](https://www.krill-ai.com/register?invite=Q8D3L35725) | One-stop access to major global and China-domestic models (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) | Global + Mainland China |
+| **OpenRouter** | <https://openrouter.ai/> | One-stop access to major global and China-domestic models (GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen, etc.) | Global |
+
+## 💎 Sponsors
+
+Thanks to **Krill AI** for sponsoring this project! Krill provides an official, stable, and ultra-fast API relay for GPT / Claude / Gemini and many Chinese models, with enterprise-grade customization, invoicing, and 7×16h dedicated technical support, plus an exclusively adapted WebSocket connection for blazing-fast time to first token.
+
+Krill offers a special deal for readers of this book: register via [this link](https://www.krill-ai.com/register?invite=Q8D3L35725) and enter the promo code "ai-agent-book" when topping up to get 23% off your first Codex plan!
 
 ## 📦 Appendix · Obtaining External Repositories
 
@@ -138,7 +148,7 @@ The book and accompanying code are fully open source. Pull Requests are very wel
 | 🐛 **Code improvements & bug fixes** | Make companion projects more robust, usable, and production-ready |
 | 🧪 **New practice projects** | Add/replace better implementations for experiments, or contribute new examples |
 | 🎨 **Figure design** | Make `book/images/` charts clearer and more polished (generated by `book/gen_*_figs.py`) |
-| 🌐 **New translations** | Translations into more languages are welcome; see Traditional Chinese/Taiwan (`book-zhtw/`), English (`book-en/`), Tamil (`book-ta/`), Vietnamese (`book-vi/`) for reference |
+| 🌐 **New translations** | Translations into more languages are welcome; see Traditional Chinese/Taiwan (`book-zhtw/`), English (`book-en/`), Tamil (`book-ta/`), Vietnamese (`book-vi/`), Japanese (`book-ja/`) for reference |
 
 Before submitting, please run the relevant experiments to confirm reproducibility; feel free to open an issue to discuss ideas first.
 

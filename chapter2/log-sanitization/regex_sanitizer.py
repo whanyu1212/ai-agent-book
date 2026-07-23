@@ -9,7 +9,7 @@
   - 私钥 / 证书（PEM 块）
   - JWT
   - 云厂商与第三方密钥（AWS AKIA、GitHub、Slack、Google、OpenAI 风格 sk-）
-  - HTTP Authorization: Bearer 令牌
+  - HTTP Authorization: Bearer / Basic 令牌
   - 配置中的口令 / 密钥赋值（password=..., token: ... 等）
   - 邮箱地址
   - 信用卡号（Luhn 校验）
@@ -60,9 +60,10 @@ def _cn_id_ok(value: str) -> bool:
 _RULES = [
     (
         "private_key", "[REDACTED_PRIVATE_KEY]",
+        # Truncated PEM (BEGIN without END) must still redact through EOF.
         re.compile(
             r"-----BEGIN (?:RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----"
-            r"[\s\S]*?-----END (?:RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----"
+            r"[\s\S]*?(?:-----END (?:RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----|(?=\Z))"
         ),
         0, None,
     ),
@@ -105,6 +106,12 @@ _RULES = [
     (
         "bearer_token", "[REDACTED_BEARER_TOKEN]",
         re.compile(r"(?i)\bBearer\s+([A-Za-z0-9._~+/=-]{10,})"),
+        1, None,
+    ),
+    (
+        "basic_auth", "[REDACTED_BASIC_AUTH]",
+        # Require Authorization: so English "Basic knowledge …" is not redacted.
+        re.compile(r"(?i)\bAuthorization\s*:\s*Basic\s+([A-Za-z0-9+/=]{4,})"),
         1, None,
     ),
     (
@@ -164,6 +171,7 @@ CATEGORY_LABELS = {
     "google_api_key": "Google API Key",
     "api_key": "API Key (sk-)",
     "bearer_token": "Bearer 令牌",
+    "basic_auth": "Basic 认证",
     "secret_assignment": "口令 / 密钥赋值",
     "email": "邮箱地址",
     "credit_card": "信用卡号",

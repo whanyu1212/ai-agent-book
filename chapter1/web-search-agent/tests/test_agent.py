@@ -162,3 +162,56 @@ def test_agent_loop_returns_a_readable_error():
 
     assert answer == "搜索过程中出现错误: provider unavailable"
     assert instance.get_trace() == []
+
+
+def test_agent_loop_marks_truncated_empty_answer(make_choice):
+    """finish_reason=length with empty content must not masquerade as
+    the misleading 'couldn't get enough info' response."""
+    instance = build_agent(make_choice(finish_reason="length", content=""))
+
+    answer = instance.search_and_answer("question")
+
+    assert "无法获取足够" not in answer
+    assert "截断" in answer
+    assert instance.get_trace()[-1]["type"] == "answer"
+
+
+def test_agent_loop_marks_truncated_partial_answer(make_choice):
+    """A partial answer cut off by max_tokens is returned WITH a truncation
+    marker, never presented as a complete answer."""
+    instance = build_agent(
+        make_choice(finish_reason="length", content="部分答案，被截")
+    )
+
+    answer = instance.search_and_answer("question")
+
+    assert answer.startswith("部分答案，被截")
+    assert "截断" in answer
+    # conversation_history retains the truncation marker (stores final, not the
+    # bare partial), so get_conversation_history() doesn't lose the semantics.
+    assert instance.conversation_history[-1]["role"] == "assistant"
+    assert "截断" in instance.conversation_history[-1]["content"]
+
+
+def test_agent_loop_survives_malformed_tool_arguments_json(monkeypatch, make_choice):
+    """Slightly invalid tool JSON must not abort the ReAct loop."""
+    from types import SimpleNamespace
+
+    bad_call = SimpleNamespace(
+        id="call-bad",
+        function=SimpleNamespace(
+            name="$web_search",
+            arguments='{"query": "moonshot",}',  # trailing comma
+        ),
+    )
+    tool_choice = make_choice(finish_reason="tool_calls", tool_calls=[bad_call])
+    answer_choice = make_choice(content="recovered answer")
+    instance = build_agent(tool_choice, answer_choice)
+    search = Mock(return_value={"ok": True})
+    monkeypatch.setattr(agent_module, "search_impl", search)
+
+    answer = instance.search_and_answer("what is caching?")
+
+    assert answer == "recovered answer"
+    search.assert_called_once_with({})
+    assert any(step["type"] == "action" for step in instance.get_trace())

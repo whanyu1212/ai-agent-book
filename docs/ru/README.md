@@ -1,10 +1,10 @@
 # Глубокое понимание AI Agent: принципы проектирования и инженерная практика
 
-[![Читать онлайн](https://img.shields.io/badge/🌐_Читать_онлайн-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![PDF](https://img.shields.io/badge/PDF-%D1%81%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C-success.svg)](#-электронная-книга) [![Languages](https://img.shields.io/badge/переводов-6%20языков-informational.svg)](#-электронная-книга)
+[![PDF](https://img.shields.io/badge/PDF-%D1%81%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C-success.svg)](#-электронная-книга) [![Читать онлайн](https://img.shields.io/badge/🌐_Читать_онлайн-bojieli.github.io-success?style=flat-square)](https://bojieli.github.io/ai-agent-book/) [![Stars](https://img.shields.io/github/stars/bojieli/ai-agent-book?style=social)](https://github.com/bojieli/ai-agent-book) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../../LICENSE) [![Languages](https://img.shields.io/badge/переводов-6%20языков-informational.svg)](#-электронная-книга)
 
 **[中文](../../README.md) · [正體中文](../zh-TW/README.md) · [English](../en/README.md) · Русский ← текущий · [Tiếng Việt](../vi/README.md) · [தமிழ்](../ta/README.md)**
 
-> 🌐 **[Читать онлайн](https://bojieli.github.io/ai-agent-book/)** — Переключатель языков, сворачиваемое оглавление, полнотекстовый поиск и прямые ссылки на сопутствующие эксперименты. Сайт автоматически перестраивается при каждом пуше в main.
+> 📥 **[Скачать PDF / EPUB](#-электронная-книга)** (рекомендуется) — рекомендуем читать книгу в PDF / EPUB, там лучшая вёрстка; также доступно [чтение онлайн](https://bojieli.github.io/ai-agent-book/) (переключатель языков, сворачиваемое оглавление, полнотекстовый поиск; сайт автоматически перестраивается при каждом пуше в main).
 
 **Агент = LLM + Контекст + Инструменты** — книга строится вокруг этой базовой формулы и за 10 глав ведёт AI Agent от принципов к инженерной практике. Весь текст, иллюстрации и **92 сопутствующих эксперимента** открыты. Приглашаем прогнать эксперименты своими руками.
 
@@ -13,13 +13,15 @@
 
 ## 📖 Электронная книга
 
-> 📥 **Скачать** (полный текст, бесплатно и открыто). Ссылки всегда указывают на свежую сборку ветки `main`; фиксированные издания — на странице [Releases](https://github.com/bojieli/ai-agent-book/releases):
+> 📥 **Скачать** (рекомендуется; полный текст, бесплатно и открыто). Ссылки всегда указывают на свежую сборку ветки `main`; фиксированные издания — на странице [Releases](https://github.com/bojieli/ai-agent-book/releases):
 > - **Китайский (оригинал)**: [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-CN.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-CN.epub)
 > - **Китайский традиционный (Тайвань)** (перевод сообщества, [@tigercosmos](https://github.com/tigercosmos)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-TW.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-zh-TW.epub)
 > - **Английский** (перевод сообщества, [@nsdevaraj](https://github.com/nsdevaraj)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-en.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-en.epub)
 > - **Русский** (перевод сообщества, [@ui99ru](https://github.com/ui99ru)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ru.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ru.epub)
 > - **Тамильский** (перевод сообщества, [@nsdevaraj](https://github.com/nsdevaraj)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-ta.epub)
 > - **Вьетнамский** (перевод сообщества, [@toanalien](https://github.com/toanalien)): [PDF](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-vi.pdf) · [EPUB](https://github.com/bojieli/ai-agent-book/releases/download/latest/AI-Agents-in-Depth-vi.epub)
+>
+> 🌐 Также доступно [чтение онлайн](https://bojieli.github.io/ai-agent-book/) — переключатель языков, сворачиваемое оглавление, полнотекстовый поиск и прямые ссылки на сопутствующие эксперименты. Сайт автоматически перестраивается при каждом пуше в main.
 
 Исходник китайского текста — в [`book/`](../../book/); версии на традиционном китайском (Тайвань)/английском/русском/тамильском/вьетнамском — вклад сообщества (могут отставать от китайского оригинала), расположены в [`book-zhtw/`](../../book-zhtw/), [`book-en/`](../../book-en/), [`book-ru/`](../../book-ru/), [`book-ta/`](../../book-ta/), [`book-vi/`](../../book-vi/) соответственно.
 
@@ -64,13 +66,20 @@
 
 Для удобства обучения рекомендуется получить API-ключи на нескольких платформах. По выбору модели см. [этот гайд](https://01.me/2025/07/llm-api-setup/).
 
-| Платформа | Ссылка | Примечания |
-| --- | --- | --- |
-| **Kimi** (Moonshot) | <https://platform.moonshot.cn/> | Серия Kimi, сильна в длинном контексте и возможностях агента |
-| **Zhipu GLM** | <https://open.bigmodel.cn/> | GLM-4.6 и др., сильный китайский, выгодная цена |
-| **Siliconflow** | <https://siliconflow.cn/> | Разные открытые модели (DeepSeek, Qwen и др.) |
-| **Krill AI** | <https://www.krill-ai.com/> | Единый доступ к основным мировым и китайским моделям (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax), с точками доступа для всего мира и материкового Китая |
-| **OpenRouter** | <https://openrouter.ai/> | Единый доступ к Gemini / Claude / GPT-5 и др., с глобальными точками доступа |
+| Платформа | Ссылка | Примечания | Точки доступа |
+| --- | --- | --- | --- |
+| **Kimi** (Moonshot) | <https://platform.moonshot.cn/> | Серия Kimi, сильна в длинном контексте и возможностях агента | Материковый Китай |
+| **Zhipu GLM** | <https://open.bigmodel.cn/> | GLM-4.6 и др., сильный китайский, выгодная цена | Материковый Китай |
+| **Siliconflow** | <https://siliconflow.cn/> | Разные открытые модели (DeepSeek, Qwen и др.), быстрый доступ из материкового Китая | Материковый Китай |
+| **DeepSeek** | <https://platform.deepseek.com/> | Официальный API DeepSeek | Весь мир + материковый Китай |
+| **Krill AI** | [www.krill-ai.com](https://www.krill-ai.com/register?invite=Q8D3L35725) | Единый доступ к основным мировым и китайским моделям (OpenAI, Claude, Gemini, Grok, Kimi, GLM, DeepSeek, Qwen, Minimax) | Весь мир + материковый Китай |
+| **OpenRouter** | <https://openrouter.ai/> | Единый доступ к основным мировым и китайским моделям (GPT, Claude, Gemini, Kimi, GLM, DeepSeek, Qwen и др.) | Весь мир |
+
+## 💎 Спонсоры
+
+Благодарим **Krill AI** за спонсорство проекта! Krill предоставляет официальный, стабильный и сверхбыстрый API-шлюз для GPT / Claude / Gemini и множества китайских моделей, с корпоративной настройкой, счетами для возмещения расходов, выделенной технической поддержкой 7×16 ч, а также эксклюзивным подключением по WebSocket для молниеносного времени до первого токена.
+
+Krill предлагает читателям книги специальную скидку: зарегистрируйтесь по [этой ссылке](https://www.krill-ai.com/register?invite=Q8D3L35725) и укажите промокод «ai-agent-book» при пополнении счёта, чтобы получить скидку 23% на первую покупку пакета Codex!
 
 ## 📦 Приложение · Получение внешних репозиториев
 

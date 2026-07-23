@@ -28,7 +28,9 @@ BASE_URL = os.environ.get("OPENAI_BASE_URL")  # 可选，兼容自建/代理端�
 
 
 def _report_issues(report: dict) -> list:
-    """JSON null issues must behave like omit ([])."""
+    """JSON null issues must behave like omit ([]). Non-dict reports → []."""
+    if not isinstance(report, dict):
+        return []
     issues = report.get("issues")
     return issues if issues is not None else []
 
@@ -86,14 +88,19 @@ def _slug(name: str) -> str:
 
 
 def _loads_lenient(content: str):
-    """容错解析 JSON：兼容个别模型把 JSON 包在 ```json ... ``` 代码围栏里的情况。"""
+    """容错解析 JSON：兼容代码围栏；非法/空内容返回 None（不抛）。"""
     s = (content or "").strip()
     if s.startswith("```"):
         s = s.split("\n", 1)[-1] if "\n" in s else s
         s = s.rsplit("```", 1)[0].strip()
         if s.lower().startswith("json"):
             s = s[4:].strip()
-    return json.loads(s)
+    if not s:
+        return None
+    try:
+        return json.loads(s)
+    except json.JSONDecodeError:
+        return None
 
 
 def count_tokens(text: str) -> int:
@@ -245,7 +252,9 @@ def glossary_agent(client, tracker, book_text, source_lang="英文", target_lang
     # 模型偶尔输出 JSON 数组等合法但非对象的 JSON；此时无法取 glossary，按空表处理。
     if not isinstance(data, dict):
         return []
-    return data.get("glossary", [])
+    # JSON null glossary must behave like omit ([]); .get(..., []) does not.
+    glossary = data.get("glossary") or []
+    return glossary if isinstance(glossary, list) else []
 
 
 def translation_agent(client, tracker, chapter_text, glossary, chapter_name,
@@ -308,7 +317,8 @@ def proofreading_agent(client, tracker, translations, glossary, target_lang="中
     content = llm_chat(
         client, tracker, "Proofreading", messages, json_mode=True, note="一致性审校"
     )
-    return _loads_lenient(content)
+    data = _loads_lenient(content)
+    return data if isinstance(data, dict) else {}
 
 
 def manager_decision(client, tracker, task, file_index, report):

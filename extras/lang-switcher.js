@@ -26,29 +26,36 @@
     // Keyed by the Chinese label in mkdocs.yml; values per target language.
     // When on a non-default language, sidebar text is replaced from this map.
     var NAV_I18N = {
-      "首页":         { en: "Home",           ta: "முகப்பு",       vi: "Trang chủ",     zhtw: "首頁" },
-      "引言":         { en: "Introduction",   ta: "அறிமுகம்",      vi: "Giới thiệu",    zhtw: "引言" },
-      "第1章 Agent基础知识": { en: "Chapter 1 · Agent Basics",          ta: "அதி. 1 · AI ஏஜெண்ட் அடிப்படைகள்",     vi: "Chương 1 · Nền tảng AI Agent", zhtw: "第 1 章 · Agent 基礎知識" },
-      "第2章 上下文工程":     { en: "Chapter 2 · Context Engineering",   ta: "அதி. 2 · சூழல் பொறியியல்",          vi: "Chương 2 · Kỹ thuật ngữ cảnh", zhtw: "第 2 章 · 上下文工程" },
-      "第3章 用户记忆和知识库": { en: "Chapter 3 · User Memory & Knowledge Base", ta: "அதி. 3 · பயனர் நினைவகம் & அறிவுத்தளம்", vi: "Chương 3 · Bộ nhớ & Cơ sở kiến thức", zhtw: "第 3 章 · 使用者記憶和知識庫" },
-      "第4章 工具":           { en: "Chapter 4 · Tools",                 ta: "அதி. 4 · கருவிகள்",                vi: "Chương 4 · Công cụ",          zhtw: "第 4 章 · 工具" },
-      "第5章 CodingAgent与代码生成": { en: "Chapter 5 · Coding Agent & Code Generation", ta: "அதி. 5 · குறியீட்டு ஏஜெண்ட் & குறியீடு உருவாக்கம்", vi: "Chương 5 · Coding Agent & Tạo mã", zhtw: "第 5 章 · Coding Agent 與程式碼生成" },
-      "第6章 Agent的评估":    { en: "Chapter 6 · Evaluating Agents",     ta: "அதி. 6 · ஏஜெண்ட் மதிப்பீடு",        vi: "Chương 6 · Đánh giá Agent",   zhtw: "第 6 章 · Agent 的評估" },
-      "第7章 模型后训练":     { en: "Chapter 7 · Model Post-Training",   ta: "அதி. 7 · மாதிரி பிந்தைய பயிற்சி",   vi: "Chương 7 · Post-training mô hình", zhtw: "第 7 章 · 模型後訓練" },
-      "第8章 Agent的自我进化": { en: "Chapter 8 · Agent Self-Evolution",  ta: "அதி. 8 · ஏஜெண்ட் சுய-பரிணாமம்",     vi: "Chương 8 · Tự tiến hóa của Agent", zhtw: "第 8 章 · Agent 的自我進化" },
-      "第9章 多模态与实时交互": { en: "Chapter 9 · Multimodal & Real-Time", ta: "அதி. 9 · பல்முக & நிகழ்நேரம்",       vi: "Chương 9 · Đa phương thức & Thời gian thực", zhtw: "第 9 章 · 多模態與即時互動" },
-      "第10章 多Agent协作":   { en: "Chapter 10 · Multi-Agent Collaboration", ta: "அதி. 10 · பல-ஏஜெண்ட் ஒத்துழைப்பு", vi: "Chương 10 · Đa Agent cộng tác", zhtw: "第 10 章 · 多 Agent 協作" },
-      "后记":         { en: "Afterword",       ta: "பின்னுரை",       vi: "Lời bạt",         zhtw: "後記" },
-      "思考题参考答案": { en: "Reference Answers", ta: "பதில் வழிகாட்டி", vi: "Đáp án tham khảo", zhtw: "思考題參考答案" },
-      // Nested sub-entries (chapter prose + experiments).
-      "正文":         { en: "Prose",          ta: "உரை",          vi: "Nội dung",     zhtw: "正文" },
-      "配套实验":     { en: "Experiments",    ta: "சோதனைகள்",     vi: "Thí nghiệm",   zhtw: "配套實驗" },
+      "首页":         { en: "Home",           ru: "Главная",    ta: "முகப்பு",       vi: "Trang chủ",     zhtw: "首頁", ja: "ホーム" },
+      "引言":         { en: "Introduction",   ru: "Введение",   ta: "அறிமுகம்",      vi: "Giới thiệu",    zhtw: "引言", ja: "はじめに" },
+      "第1章 Agent基础知识": { en: "Chapter 1 · Agent Basics", ru: "Глава 1 · Введение в ИИ-агенты",           ta: "அதி. 1 · AI ஏஜெண்ட் அடிப்படைகள்",     vi: "Chương 1 · Nền tảng AI Agent", zhtw: "第 1 章 · Agent 基礎知識", ja: "第1章 · Agent の基礎知識" },
+      "第2章 上下文工程":     { en: "Chapter 2 · Context Engineering", ru: "Глава 2 · Инженерия контекста",    ta: "அதி. 2 · சூழல் பொறியியல்",          vi: "Chương 2 · Kỹ thuật ngữ cảnh", zhtw: "第 2 章 · 上下文工程", ja: "第2章 · コンテキストエンジニアリング" },
+      "第3章 用户记忆和知识库": { en: "Chapter 3 · User Memory & Knowledge Base", ru: "Глава 3 · Память и база знаний",  ta: "அதி. 3 · பயனர் நினைவகம் & அறிவுத்தளம்", vi: "Chương 3 · Bộ nhớ & Cơ sở kiến thức", zhtw: "第 3 章 · 使用者記憶和知識庫", ja: "第3章 · ユーザーメモリと知識ベース" },
+      "第4章 工具":           { en: "Chapter 4 · Tools", ru: "Глава 4 · Инструменты",                  ta: "அதி. 4 · கருவிகள்",                vi: "Chương 4 · Công cụ",          zhtw: "第 4 章 · 工具", ja: "第4章 · ツール" },
+      "第5章 CodingAgent与代码生成": { en: "Chapter 5 · Coding Agent & Code Generation", ru: "Глава 5 · Кодинг-агент и генерация кода",  ta: "அதி. 5 · குறியீட்டு ஏஜெண்ட் & குறியீடு உருவாக்கம்", vi: "Chương 5 · Coding Agent & Tạo mã", zhtw: "第 5 章 · Coding Agent 與程式碼生成", ja: "第5章 · Coding Agent とコード生成" },
+      "第6章 Agent的评估":    { en: "Chapter 6 · Evaluating Agents", ru: "Глава 6 · Оценка агентов",      ta: "அதி. 6 · ஏஜெண்ட் மதிப்பீடு",        vi: "Chương 6 · Đánh giá Agent",   zhtw: "第 6 章 · Agent 的評估", ja: "第6章 · Agent の評価" },
+      "第7章 模型后训练":     { en: "Chapter 7 · Model Post-Training", ru: "Глава 7 · Постобучение модели",    ta: "அதி. 7 · மாதிரி பிந்தைய பயிற்சி",   vi: "Chương 7 · Post-training mô hình", zhtw: "第 7 章 · 模型後訓練", ja: "第7章 · モデルのポストトレーニング" },
+      "第8章 Agent的自我进化": { en: "Chapter 8 · Agent Self-Evolution", ru: "Глава 8 · Самоэволюция агента",   ta: "அதி. 8 · ஏஜெண்ட் சுய-பரிணாமம்",     vi: "Chương 8 · Tự tiến hóa của Agent", zhtw: "第 8 章 · Agent 的自我進化", ja: "第8章 · Agent の自己進化" },
+      "第9章 多模态与实时交互": { en: "Chapter 9 · Multimodal & Real-Time", ru: "Глава 9 · Мультимодальность и реальное время",  ta: "அதி. 9 · பல்முக & நிகழ்நேரம்",       vi: "Chương 9 · Đa phương thức & Thời gian thực", zhtw: "第 9 章 · 多模態與即時互動", ja: "第9章 · マルチモーダルとリアルタイム対話" },
+      "第10章 多Agent协作":   { en: "Chapter 10 · Multi-Agent Collaboration", ru: "Глава 10 · Мультиагентное взаимодействие",  ta: "அதி. 10 · பல-ஏஜெண்ட் ஒத்துழைப்பு", vi: "Chương 10 · Đa Agent cộng tác", zhtw: "第 10 章 · 多 Agent 協作", ja: "第10章 · マルチ Agent 協調" },
+      "后记":         { en: "Afterword", ru: "Послесловие",        ta: "பின்னுரை",       vi: "Lời bạt",         zhtw: "後記", ja: "あとがき" },
+      "思考题参考答案": { en: "Reference Answers", ru: "Ответы к вопросам",  ta: "பதில் வழிகாட்டி", vi: "Đáp án tham khảo", zhtw: "思考題參考答案", ja: "演習問題の解答例" },
+      // Nested sub-entry under each chapter (the experiment index).
+      "配套实验":     { en: "Experiments", ru: "Эксперименты",     ta: "சோதனைகள்",     vi: "Thí nghiệm",   zhtw: "配套實驗" },
+    };
+
+    // Right-sidebar TOC title ("目录"), fixed by theme.language at build
+    // time — rewritten client-side on translated editions.
+    var TOC_TITLE = {
+      zh: "目录", zhtw: "目錄", en: "On this page",
+      ta: "உள்ளடக்கம்", vi: "Mục lục", ru: "На этой странице",
     };
 
     var SEARCH_STRINGS = {
       zh:   { placeholder: "搜索",   searching: "正在初始化搜索引擎", input: "键入进行检索" },
       en:   { placeholder: "Search", searching: "Initializing search", input: "Type to search" },
       zhtw: { placeholder: "搜尋",   searching: "正在初始化搜尋引擎", input: "鍵入進行檢索" },
+      ru:   { placeholder: "Поиск",  searching: "Инициализация поиска", input: "Введите запрос" },
       ta:   { placeholder: "தேடு",   searching: "தேடல் தொடங்கப்படுகிறது", input: "தட்டச்சு செய்து தேடவும்" },
       vi:   { placeholder: "Tìm kiếm", searching: "Đang khởi tạo",     input: "Gõ để tìm kiếm" },
     };
@@ -172,7 +179,7 @@
     function siteBasePath() {
       try { return new URL(window.SITE_ROOT).pathname; } catch (_) {}
       var p = location.pathname;
-      var idx = Math.max(p.indexOf("book-en/"), p.indexOf("book-ta/"),
+      var idx = Math.max(p.indexOf("book-en/"), p.indexOf("book-ru/"), p.indexOf("book-ta/"),
                          p.indexOf("book-vi/"), p.indexOf("book-zhtw/"),
                          p.indexOf("book/"));
       if (idx === -1) return "/";
@@ -254,6 +261,38 @@
 
         if (navText && NAV_I18N[currentText] && NAV_I18N[currentText][targetCode]) {
           navText.textContent = NAV_I18N[currentText][targetCode];
+        }
+      }
+
+      // Translate the drawer's per-chapter sub-nav headers. When a chapter
+      // subtree is opened on mobile, Material shows the chapter title again
+      // as <label class="md-nav__title">第2章 …</label>; those labels are
+      // plain text (not .md-nav__link), so the loop above misses them. The
+      // site-name title at the top is not in NAV_I18N and stays untouched.
+      var subTitles = document.querySelectorAll(".md-sidebar--primary .md-nav__title");
+      for (var st = 0; st < subTitles.length; st++) {
+        var stNodes = subTitles[st].childNodes;
+        for (var sn = 0; sn < stNodes.length; sn++) {
+          var node = stNodes[sn];
+          if (node.nodeType !== 3) continue;
+          var key = node.textContent.trim();
+          if (key && NAV_I18N[key] && NAV_I18N[key][targetCode]) {
+            node.textContent = NAV_I18N[key][targetCode];
+          }
+        }
+      }
+
+      // Translate the right-sidebar TOC title. Only replace the text node —
+      // the label also contains the (mobile-only) back-arrow icon span.
+      if (TOC_TITLE[targetCode]) {
+        var tocTitles = document.querySelectorAll(".md-nav--secondary > .md-nav__title");
+        for (var t = 0; t < tocTitles.length; t++) {
+          var nodes = tocTitles[t].childNodes;
+          for (var n = 0; n < nodes.length; n++) {
+            if (nodes[n].nodeType === 3 && nodes[n].textContent.trim()) {
+              nodes[n].textContent = TOC_TITLE[targetCode];
+            }
+          }
         }
       }
 
