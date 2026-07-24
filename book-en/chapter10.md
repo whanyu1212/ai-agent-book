@@ -621,7 +621,7 @@ The intelligence of these Agents is built on three core components:
 
 **Reflection Mechanism**: Agents periodically pause their daily activities to review recent experiences and ask abstract questions about themselves and others ("What is Klaus Mueller researching?" "Who is my closest friend?"). Through this self-questioning, the Agent elevates specific event memories into generalized insights, storing them back into the memory stream as a basis for future decisions. Reflection not only helps the Agent understand the external world but also promotes self-awareness—the Agent begins to "realize" its own role, relationships, and goals.
 
-Note that this reflection differs from the reflection in Chapter 8 on Agent self-evolution: the reflection in Chapter 8 occurs **after task completion** and aims to update long-term capabilities; the reflection here occurs **during the generative Agent's daily activities** and aims to update immediate internal states and goals.
+Note that this reflection differs from the continuous evolution discussed in Chapter 8: it occurs during a generative Agent's daily activities and aims to update immediate internal state and goals. In Chapter 8, post-task reflection is at most a candidate lesson; it becomes a long-term capability update only after outcome evaluation, cross-trajectory synthesis, and subsequent validation.
 
 **Planning and Reacting**: Agents plan their daily activities (e.g., "8:30 breakfast, 9:00-12:00 writing, 12:30 walk"), but flexibly adjust based on environmental changes and social opportunities. The combination of planning and real-time reaction makes the Agent's behavior both goal-oriented and adaptable to the unpredictability of social interactions.
 

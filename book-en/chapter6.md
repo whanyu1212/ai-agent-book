@@ -2,13 +2,13 @@
 
 When building an Agent system, developers face numerous design choices that often lack obvious correct answers:
 
-- Which model to use?
+- Which model should be used?
 - What tools should the model be able to call?
 - What data should the knowledge base store, and how should it be structured?
 - How should user memory be implemented?
 - How should the model's prompts and Skills be organized?
 - What constraints need to be added to the Harness?
-- How should this Agent's self-evolution and self-iteration be carried out?
+- How should evaluation results be transformed into learning signals for the Agent's continuous evolution?
 
 Evaluation puts these decisions on a scientific footing. Through systematic comparative experiments (change one variable at a time and observe the effect) and ablation experiments (disable one component at a time and observe how overall performance changes), you can distinguish genuine capability gains from superficial fluctuations — and avoid being penny wise and pound foolish. Software engineering has a saying: you can't improve what you don't measure. Without a repeatable evaluation system, an Agent can only be iterated on intuition.
 
@@ -712,9 +712,9 @@ Core methodology: Observe → Hypothesize → Experiment → Validate → New Un
 
 The evaluation system introduced in this chapter forms a complete closed loop: **Evaluation Environment** provides automated testing infrastructure → **Evaluation Dataset** defines test cases → **Automated Evaluation Methods** (LLM-as-a-Judge and Rubric) score Agent performance → **Benchmark Analysis** reveals improvement directions → **System Improvements** fix issues → Update the evaluation environment and dataset, starting a new iteration cycle.
 
-From the perspective of the Harness engineering introduced in Chapter 1, the evaluation methodology in this chapter is the systematic implementation of the "validation" function within the Harness, and the "from Benchmark report to system improvement" closed loop is the core mechanism for the Harness's iterative optimization—evaluation not only measures the Agent's current capabilities but also guides the Harness's ongoing evolution.
+From the perspective of Harness engineering introduced in Chapter 1, the evaluation methodology in this chapter is the systematic implementation of the Harness's “validation” function, while the closed loop “from Benchmark report to system improvement” is the core mechanism for iterative Harness optimization. This chapter answers “how to measure reliably”; building on it, Chapter 8 answers “how to transform multidimensional trajectory evaluations into executable, reversible system updates.”
 
-The evaluation system built here does more than optimize the current system: it lays a critical foundation for the model post-training discussed in the next chapter—the evaluation environment and dataset are key inputs to post-training, and the simulation environment is its practice ground. The next chapter shifts from evaluation to model-level improvement, examining how SFT and RL write interaction strategies into model parameters.
+The evaluation system established here not only supports optimization of the current system but also provides a critical foundation for the next two chapters. Chapter 7 turns evaluation environments and data into inputs for model post-training, using SFT and RL to write interaction policies into parameters. Chapter 8 transforms multidimensional evaluations of production trajectories into candidate updates to knowledge, instructions, programs, or parameters.
 
 ## Thought Questions
 
