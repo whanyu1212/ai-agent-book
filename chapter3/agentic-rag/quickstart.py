@@ -24,8 +24,16 @@ def check_environment():
     load_dotenv()
     
     # Check for at least one API key
-    providers = ["MOONSHOT_API_KEY", "ARK_API_KEY", "SILICONFLOW_API_KEY", 
-                 "OPENAI_API_KEY", "OPENROUTER_API_KEY"]
+    providers = [
+        "MOONSHOT_API_KEY",
+        "ARK_API_KEY",
+        "SILICONFLOW_API_KEY",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GROQ_API_KEY",
+        "TOGETHER_API_KEY",
+        "DEEPSEEK_API_KEY",
+    ]
     
     has_key = False
     for provider in providers:
@@ -40,6 +48,9 @@ def check_environment():
         print("   - ARK_API_KEY for Doubao")
         print("   - SILICONFLOW_API_KEY for SiliconFlow")
         print("   - OPENAI_API_KEY for OpenAI")
+        print("   - GROQ_API_KEY for Groq")
+        print("   - TOGETHER_API_KEY for Together")
+        print("   - DEEPSEEK_API_KEY for DeepSeek")
         return False
     
     return True

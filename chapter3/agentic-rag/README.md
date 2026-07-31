@@ -305,4 +305,14 @@ Agentic：多轮检索+引用；Non-Agentic：单次检索注入 prompt。
 
 ### OpenRouter 通用回退 / Universal OpenRouter fallback
 
-Primary provider keys take precedence; else `OPENROUTER_API_KEY` routes chat via OpenRouter with model id mapping. See `env.example`. Related: [`../agentic-rag-for-user-memory/`](../agentic-rag-for-user-memory/).
+Chat LLM credentials, endpoints, aliases, and fallback behavior are resolved by
+`agentbook.providers`. The experiment supports Kimi/Moonshot, Doubao,
+SiliconFlow, OpenAI, OpenRouter, Groq, Together, and DeepSeek while retaining
+its experiment-specific default models.
+
+When a primary key is missing and `OPENROUTER_API_KEY` is set, known model ids
+are mapped to their OpenRouter equivalents. Unknown provider-native ids remain
+unchanged so an unavailable model fails by name rather than silently running a
+different model. Selecting `LLM_PROVIDER=openai` explicitly remains direct.
+See `env.example`. Related:
+[`../agentic-rag-for-user-memory/`](../agentic-rag-for-user-memory/).

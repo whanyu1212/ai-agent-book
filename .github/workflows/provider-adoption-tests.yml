@@ -2,7 +2,7 @@ name: provider adoption tests
 
 # Chapters 2 and 3 resolve endpoints, credentials and model ids through
 # agentbook.providers rather than through per-experiment copies of the old
-# openrouter_fallback.py. That makes a change to agentbook/ able to break seven
+# openrouter_fallback.py. That makes a change to agentbook/ able to break eight
 # experiments at once, in code paths none of their own tests would flag as
 # related -- so the shared package is a trigger here, exactly as it is for
 # chapter 1 in web-search-agent-tests.yml.
@@ -15,6 +15,7 @@ on:
       - "chapter2/kv-cache/**"
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
+      - "chapter3/agentic-rag/**"
       - "chapter3/contextual-retrieval/**"
       - "chapter3/log-sanitization/**"
       - "pyproject.toml"
@@ -27,6 +28,7 @@ on:
       - "chapter2/kv-cache/**"
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
+      - "chapter3/agentic-rag/**"
       - "chapter3/contextual-retrieval/**"
       - "chapter3/log-sanitization/**"
       - "pyproject.toml"
@@ -116,4 +118,40 @@ jobs:
           python -m pytest -q
           test_provider_resolution.py
           test_client_initialization.py
+          test_history_limit_zero.py
+
+  agentic-rag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the package
+        working-directory: chapter3/agentic-rag
+        run: >-
+          python -m pip install
+          -r requirements.txt
+          "pytest>=7.4"
+
+      - name: Run agentic-rag provider tests
+        working-directory: chapter3/agentic-rag
+        env:
+          SILICONFLOW_API_KEY: ""
+          ARK_API_KEY: ""
+          MOONSHOT_API_KEY: ""
+          KIMI_API_KEY: ""
+          OPENROUTER_API_KEY: ""
+          OPENAI_API_KEY: ""
+          GROQ_API_KEY: ""
+          TOGETHER_API_KEY: ""
+          DEEPSEEK_API_KEY: ""
+        run: >-
+          python -m pytest -q
+          test_provider_resolution.py
+          test_client_initialization.py
+          test_request_policy.py
           test_history_limit_zero.py
