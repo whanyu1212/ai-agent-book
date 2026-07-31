@@ -16,15 +16,8 @@ from datetime import datetime
 from dataclasses import dataclass, field
 import time
 from openai import OpenAI
+from agentbook.model_policy import reasoning_safe_temperature
 from config import ChunkingConfig, KnowledgeBaseConfig, KnowledgeBaseType, LLMConfig
-
-
-def _reasoning_safe_temperature(model, requested=1.0):
-    """Reasoning models (Kimi K3, GPT-5, ...) only accept temperature=1.
-    Return 1 for those; otherwise the requested value so non-reasoning
-    providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
-    m = str(model or "").lower().replace("/", "-")
-    return 1 if ("kimi-k3" in m or "gpt-5" in m) else requested
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -107,15 +100,12 @@ class ContextualChunker:
     
     def _init_llm_client(self):
         """Initialize LLM client for context generation"""
-        client_config, model = self.llm_config.get_client_config()
-        base_url = client_config.pop("base_url", None)
-        
-        if base_url:
-            self.client = OpenAI(base_url=base_url, **client_config)
-        else:
-            self.client = OpenAI(**client_config)
-        
-        self.model = model
+        self.backend = self.llm_config.resolve_backend()
+        self.client = OpenAI(
+            api_key=self.backend.api_key,
+            base_url=self.backend.base_url,
+        )
+        self.model = self.backend.model
         logger.info(f"Using {self.llm_config.provider} ({self.model}) for context generation")
     
     def chunk_document(self, 
@@ -423,7 +413,7 @@ Please give a short succinct context to situate this chunk within the overall do
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                temperature=_reasoning_safe_temperature(self.model, 0.3),  # Low temperature for consistency
+                temperature=reasoning_safe_temperature(self.model, 0.3),  # Low temperature for consistency
                 max_tokens=100  # Anthropic mentions 50-100 tokens typically
             )
             

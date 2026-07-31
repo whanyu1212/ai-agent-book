@@ -82,6 +82,19 @@ PROVIDERS: dict[str, Provider] = {
         default_model="gemini-2.5-flash",
         key_vars=("GEMINI_API_KEY", "GOOGLE_API_KEY"),
     ),
+    "groq": Provider(
+        name="groq",
+        base_url="https://api.groq.com/openai/v1",
+        default_model="llama-3.3-70b-versatile",
+        key_vars=("GROQ_API_KEY",),
+    ),
+    "together": Provider(
+        name="together",
+        base_url="https://api.together.xyz/v1",
+        default_model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        key_vars=("TOGETHER_API_KEY",),
+        namespaces_models=True,
+    ),
     "ollama": Provider(
         name="ollama",
         base_url="http://localhost:11434/v1",
