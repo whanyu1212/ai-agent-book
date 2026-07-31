@@ -126,9 +126,11 @@ python demo.py --offline
 
 # Path B: real model (needed for small-model instruction-following degradation)
 cp env.example .env    # set OPENAI_API_KEY (chat + embeddings both use OpenAI)
-# Fallback: if OPENAI_API_KEY is unset but OPENROUTER_API_KEY is set, chat routes via OpenRouter
-# (model mapped to openai/gpt-5.6-luna, etc.); tool retrieval falls back to local hash embeddings
-# (OpenRouter has no embeddings API).
+# Chat credentials, endpoints, model mapping, and fallback behavior are resolved by
+# agentbook.providers. If OPENAI_API_KEY is unset but OPENROUTER_API_KEY is set,
+# chat routes via OpenRouter; known model ids are mapped, while unknown ids stay
+# unchanged instead of silently selecting a different model. Tool retrieval falls
+# back to local hash embeddings because OpenRouter has no embeddings API here.
 python demo.py                                   # all 8 tasks × three strategies
 python demo.py --strategies full,discovery       # compare only two strategies
 python demo.py --tasks finance+news,crypto+news  # selected tasks (comma-separated)
@@ -316,8 +318,10 @@ python demo.py --offline
 
 # 方式 B：真实模型（体现小模型"指令遵循退化"需要真实 LLM）
 cp env.example .env    # 填入 OPENAI_API_KEY（chat 与 embeddings 都用 OpenAI）
-# 兜底：若无 OPENAI_API_KEY 但设置了 OPENROUTER_API_KEY，chat 会自动改走 OpenRouter
-#（模型映射到 openai/gpt-5.6-luna 等），工具检索退用本地哈希嵌入（OpenRouter 无 embeddings 接口）。
+# 聊天凭据、端点、模型映射和兜底逻辑均由 agentbook.providers 统一解析。若无
+# OPENAI_API_KEY 但设置了 OPENROUTER_API_KEY，chat 会自动改走 OpenRouter；已知模型
+# 名会映射，未知名称保持不变而非静默改用其他模型。OpenRouter 在这里没有 embeddings
+# 接口，工具检索会退用本地哈希嵌入。
 python demo.py                                   # 全部 8 任务 × 三种策略
 python demo.py --strategies full,discovery       # 只跑其中两种策略对比
 python demo.py --tasks finance+news,crypto+news  # 只跑指定任务（逗号分隔）

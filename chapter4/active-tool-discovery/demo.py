@@ -12,7 +12,7 @@
 且对小模型的指令遵循是灾难；主动发现按需加载，token 大幅下降、选择更精准。
 
 用法（详见 --help）：
-    python demo.py                         # 默认：全部任务 × 三种策略（需 OPENAI_API_KEY）
+    python demo.py                         # 默认：全部任务 × 三种策略（需 OpenAI 或 OpenRouter key）
     python demo.py --offline               # 离线自检：本地嵌入 + mock 模型，无需任何 key
     python demo.py --tasks finance+news,crypto+news
     python demo.py --strategies full,discovery --tool-set-size 30
@@ -29,17 +29,24 @@ import time
 from tools_library import TASKS, grade, select_tools, ALL_TOOLS
 
 
-def _to_openrouter_model(model: str) -> str:
-    """把常见模型名映射到 OpenRouter 命名空间（用于无 OPENAI_API_KEY 的兜底路径）。"""
-    if not model:
-        return "openai/gpt-5.6-luna"
-    if "/" in model:
-        return model
-    if model.startswith("gpt-"):
-        return "openai/" + model
-    if model.startswith("claude-"):
-        return "anthropic/claude-opus-4.8"
-    return "openai/gpt-5.6-luna"
+def _create_online_backend(model: str, embed_model: str):
+    """Create the chat client and matching embedding backend for online runs."""
+    from discovery import OpenAIEmbedder
+    from openai import OpenAI
+
+    from agentbook.providers import resolve_backend
+
+    backend = resolve_backend("openai", model=model)
+    client = OpenAI(api_key=backend.api_key, base_url=backend.base_url)
+    if backend.using_openrouter:
+        # OpenRouter proxies chat completions, but this experiment needs a
+        # separate local embedder because it does not offer embeddings here.
+        from offline_backend import LocalEmbedder
+
+        embedder = LocalEmbedder()
+    else:
+        embedder = OpenAIEmbedder(client, model=embed_model)
+    return backend, client, embedder
 
 
 # 策略注册表：key -> (中文名, 需要 index 吗)
@@ -164,33 +171,27 @@ def main():
     else:
         try:
             from dotenv import load_dotenv
-            from openai import OpenAI
         except ImportError:
             print("缺少 openai / python-dotenv，请先 pip install -r requirements.txt，"
                   "或改用 --offline 离线自检。")
             sys.exit(1)
         load_dotenv()
-        from discovery import OpenAIEmbedder, ToolIndex
-        if os.getenv("OPENAI_API_KEY"):
-            # 直连 OpenAI：chat + embeddings 都走 OpenAI
-            client = OpenAI()
-            model = args.model
-            embedder = OpenAIEmbedder(client, model=args.embed_model)
-        elif os.getenv("OPENROUTER_API_KEY"):
-            # 统一兜底：OpenRouter 只代理 chat completions，没有 embeddings 接口，
-            # 因此对话走 OpenRouter（真实模型），工具检索改用本地哈希嵌入。
-            from offline_backend import LocalEmbedder
-            client = OpenAI(api_key=os.getenv("OPENROUTER_API_KEY"),
-                            base_url="https://openrouter.ai/api/v1")
-            model = _to_openrouter_model(args.model)
-            embedder = LocalEmbedder()
+        try:
+            backend, client, embedder = _create_online_backend(args.model, args.embed_model)
+        except ImportError:
+            print("缺少依赖，请先 pip install -r requirements.txt，"
+                  "或改用 --offline 离线自检。")
+            sys.exit(1)
+        except ValueError:
+            print("请设置 OPENAI_API_KEY 或 OPENROUTER_API_KEY（见 env.example）；"
+                  "通过 --model 或 MODEL 选择对话模型，或改用 --offline 离线自检。")
+            sys.exit(1)
+        from discovery import ToolIndex
+        model = backend.model
+        if backend.using_openrouter:
             print("未检测到 OPENAI_API_KEY，改走 OpenRouter 兜底：")
             print(f"  · 对话模型: {model}（真实调用）")
             print("  · 工具检索: 本地哈希嵌入（OpenRouter 无 embeddings 接口）。")
-        else:
-            print("请设置 OPENAI_API_KEY 或 OPENROUTER_API_KEY（见 env.example），"
-                  "或改用 --offline 离线自检。")
-            sys.exit(1)
 
     index = ToolIndex(embedder, tools=tools) if need_index else None
 
