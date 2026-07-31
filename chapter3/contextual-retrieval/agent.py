@@ -7,17 +7,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from openai import OpenAI
 
+from agentbook.model_policy import reasoning_safe_temperature
 from config import Config, LLMConfig, AgentConfig
 from tools import KnowledgeBaseTools, get_tool_definitions
-
-
-def _reasoning_safe_temperature(model, requested=1.0):
-    """Reasoning models (Kimi K3, GPT-5, ...) only accept temperature=1.
-    Return 1 for those; otherwise the requested value so non-reasoning
-    providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
-    m = str(model or "").lower().replace("/", "-")
-    return 1 if ("kimi-k3" in m or "gpt-5" in m) else requested
-
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -56,18 +48,12 @@ class AgenticRAG:
     
     def _init_llm_client(self):
         """Initialize the LLM client based on provider"""
-        client_config, model = self.config.llm.get_client_config()
-        
-        # Extract base_url if present
-        base_url = client_config.pop("base_url", None)
-        
-        # Create OpenAI client
-        if base_url:
-            self.client = OpenAI(base_url=base_url, **client_config)
-        else:
-            self.client = OpenAI(**client_config)
-        
-        self.model = model
+        self.backend = self.config.llm.resolve_backend()
+        self.client = OpenAI(
+            api_key=self.backend.api_key,
+            base_url=self.backend.base_url,
+        )
+        self.model = self.backend.model
         logger.info(f"Using model: {self.model}")
     
     def _get_system_prompt(self) -> str:
@@ -204,7 +190,7 @@ Remember: Your credibility depends on providing accurate, well-cited information
                     messages=messages,
                     tools=self.tools,
                     tool_choice="auto",
-                    temperature=_reasoning_safe_temperature(self.model, self.config.llm.temperature),
+                    temperature=reasoning_safe_temperature(self.model, self.config.llm.temperature),
                     max_tokens=self.config.llm.max_tokens,
                     stream=False  # We handle streaming separately
                 )
@@ -355,7 +341,7 @@ Please answer the question based only on the provided context. Include citations
                 response_stream = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    temperature=_reasoning_safe_temperature(self.model, self.config.llm.temperature),
+                    temperature=reasoning_safe_temperature(self.model, self.config.llm.temperature),
                     max_tokens=self.config.llm.max_tokens,
                     stream=True
                 )
@@ -370,7 +356,7 @@ Please answer the question based only on the provided context. Include citations
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    temperature=_reasoning_safe_temperature(self.model, self.config.llm.temperature),
+                    temperature=reasoning_safe_temperature(self.model, self.config.llm.temperature),
                     max_tokens=self.config.llm.max_tokens,
                     stream=False
                 )

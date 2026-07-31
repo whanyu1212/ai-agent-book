@@ -30,6 +30,8 @@ PROVIDER_KEY_VARS = [
     "OPENAI_API_KEY",
     "GEMINI_API_KEY",
     "GOOGLE_API_KEY",
+    "GROQ_API_KEY",
+    "TOGETHER_API_KEY",
     "OLLAMA_API_KEY",
     "OPENROUTER_API_KEY",
     "OPENROUTER_MODEL",
@@ -148,6 +150,42 @@ def test_explicit_model_overrides_default(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key-4")
     backend = resolve_backend("openrouter", model="google/gemma-4-31b-it:free")
     assert backend.model == "google/gemma-4-31b-it:free"
+
+
+@pytest.mark.parametrize(
+    "provider,key_var,base_url,model",
+    [
+        (
+            "groq",
+            "GROQ_API_KEY",
+            "https://api.groq.com/openai/v1",
+            "llama-3.3-70b-versatile",
+        ),
+        (
+            "together",
+            "TOGETHER_API_KEY",
+            "https://api.together.xyz/v1",
+            "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        ),
+    ],
+)
+def test_additional_openai_compatible_providers(
+    monkeypatch, provider, key_var, base_url, model
+):
+    monkeypatch.setenv(key_var, f"test-{provider}-key")
+    backend = resolve_backend(provider)
+    assert backend.api_key == f"test-{provider}-key"
+    assert backend.base_url == base_url
+    assert backend.model == model
+    assert backend.using_openrouter is False
+
+
+def test_together_namespaces_bare_model_ids(monkeypatch):
+    monkeypatch.setenv("TOGETHER_API_KEY", "test-together-key")
+    backend = resolve_backend("together", model="gpt-oss-120b")
+    assert backend.model == "openai/gpt-oss-120b"
+    assert backend.base_url == "https://api.together.xyz/v1"
+    assert backend.using_openrouter is False
 
 
 def test_missing_key_error_names_the_variables():

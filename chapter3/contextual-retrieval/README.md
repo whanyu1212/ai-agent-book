@@ -248,4 +248,15 @@ python main.py --query "宪法第一条是什么" --mode compare
 
 ### OpenRouter 通用回退 / Universal OpenRouter fallback
 
-Chat LLM falls back to OpenRouter when primary keys are missing and `OPENROUTER_API_KEY` is set. See `env.example`. Related: [`../contextual-retrieval-for-user-memory/`](../contextual-retrieval-for-user-memory/) (Exp. 3-12).
+Chat LLM credentials, endpoints, aliases, and fallback behavior are resolved by
+`agentbook.providers`. The experiment supports Kimi/Moonshot, Doubao,
+SiliconFlow, OpenAI, OpenRouter, Groq, Together, and DeepSeek while retaining
+its experiment-specific default models.
+
+When a primary key is missing and `OPENROUTER_API_KEY` is set, known model ids
+are mapped to their OpenRouter equivalents. Unknown provider-native ids remain
+unchanged so an unavailable model fails by name rather than silently running a
+different model. Selecting `LLM_PROVIDER=openai` explicitly remains direct.
+See `env.example`. Related:
+[`../contextual-retrieval-for-user-memory/`](../contextual-retrieval-for-user-memory/)
+(Exp. 3-12).

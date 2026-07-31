@@ -21,15 +21,9 @@ def setup_environment():
     
     # Check LLM API key
     try:
-        api_key = config.llm.get_api_key(config.llm.provider)
-        if not api_key:
-            logger.warning(f"No API key found for provider {config.llm.provider}")
-            logger.info("Please set the appropriate environment variable:")
-            logger.info("  - MOONSHOT_API_KEY for Kimi")
-            logger.info("  - ARK_API_KEY for Doubao")
-            logger.info("  - SILICONFLOW_API_KEY for SiliconFlow")
-            logger.info("  - OPENAI_API_KEY for OpenAI")
-            return False
+        backend = config.llm.resolve_backend()
+        route = " via OpenRouter" if backend.using_openrouter else ""
+        logger.info(f"Resolved LLM provider {backend.provider}{route}: {backend.model}")
     except Exception as e:
         logger.error(f"Error checking API keys: {e}")
         return False
