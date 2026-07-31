@@ -12,6 +12,7 @@ on:
     paths:
       - "agentbook/**"
       - "chapter2/context-compression/**"
+      - "chapter2/kv-cache/**"
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
       - "chapter3/log-sanitization/**"
@@ -22,6 +23,7 @@ on:
     paths:
       - "agentbook/**"
       - "chapter2/context-compression/**"
+      - "chapter2/kv-cache/**"
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
       - "chapter3/log-sanitization/**"
@@ -38,14 +40,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Two of the six migrated experiments are deliberately absent.
-        # chapter2/kv-cache keeps live-API scripts at its root that exit(1)
-        # without MOONSHOT_API_KEY, and chapter2/agent-skills-ppt cannot import
-        # python-pptx under the shared install. Both fail the same way before
-        # this migration; adding them needs the Phase 6A test/manual split
-        # first, not a workaround here.
+        # agent-skills-ppt remains absent because it cannot import python-pptx
+        # under the shared install. Keep that pre-existing dependency gap
+        # visible until Phase 7 reconciles its isolated requirements contract.
         experiment:
           - chapter2/context-compression
+          - chapter2/kv-cache
           - chapter2/prompt-injection
           - chapter2/system-hint
           - chapter3/log-sanitization

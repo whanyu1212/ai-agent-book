@@ -10,6 +10,7 @@ from typing import List, Dict, Any, Optional, Generator, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime
 from openai import OpenAI
+from agentbook.model_policy import reasoning_safe_temperature
 from config import Config
 from web_tools import WebTools
 from compression_strategies import (
@@ -18,13 +19,6 @@ from compression_strategies import (
     CompressedContent
 )
 
-
-def _reasoning_safe_temperature(model, requested=1.0):
-    """Reasoning models (Kimi K3, GPT-5, ...) only accept temperature=1.
-    Return 1 for those; otherwise the requested value so non-reasoning
-    providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
-    m = str(model or "").lower().replace("/", "-")
-    return 1 if ("kimi-k3" in m or "gpt-5" in m) else requested
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format=Config.LOG_FORMAT)
@@ -366,7 +360,7 @@ TODAY'S DATE: {date_string}"""
                 messages=messages,
                 tools=self._get_tools_description(),
                 tool_choice="auto",
-                temperature=_reasoning_safe_temperature(self.model, Config.MODEL_TEMPERATURE),
+                temperature=reasoning_safe_temperature(self.model, Config.MODEL_TEMPERATURE),
                 max_tokens=Config.MODEL_MAX_TOKENS,
                 stream=True,
                 stream_options={"include_usage": True}  # Request token usage in stream
@@ -462,7 +456,7 @@ TODAY'S DATE: {date_string}"""
             messages=messages,
             tools=self._get_tools_description(),
             tool_choice="auto",
-            temperature=_reasoning_safe_temperature(self.model, Config.MODEL_TEMPERATURE),
+            temperature=reasoning_safe_temperature(self.model, Config.MODEL_TEMPERATURE),
             max_tokens=Config.MODEL_MAX_TOKENS,
             stream=False
         )
