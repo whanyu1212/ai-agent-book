@@ -7,29 +7,17 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from openai import OpenAI
 
+from agentbook.model_policy import reasoning_safe_temperature
 from config import Config, LLMConfig, AgentConfig
 from tools import KnowledgeBaseTools, get_tool_definitions
-
-
-def _is_reasoning_model(model) -> bool:
-    """Whether the model is a reasoning model (Kimi K3, GPT-5, ...)."""
-    m = str(model or "").lower().replace("/", "-")
-    return "kimi-k3" in m or "gpt-5" in m
-
-
-def _reasoning_safe_temperature(model, requested=1.0):
-    """Reasoning models (Kimi K3, GPT-5, ...) only accept temperature=1.
-    Return 1 for those; otherwise the requested value so non-reasoning
-    providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
-    return 1 if _is_reasoning_model(model) else requested
-
 
 def _reasoning_safe_max_tokens(model, requested=1024, floor=4096):
     """Reasoning models spend part of their budget on hidden reasoning tokens,
     so a small ``max_tokens`` (e.g. 1024) silently truncates the visible answer.
     Ensure reasoning models get at least ``floor`` tokens; leave other providers
     at the requested value."""
-    if _is_reasoning_model(model):
+    normalized = str(model or "").casefold().replace("/", "-")
+    if "kimi-k3" in normalized or "gpt-5" in normalized:
         return max(requested, floor)
     return requested
 
@@ -71,18 +59,12 @@ class AgenticRAG:
     
     def _init_llm_client(self):
         """Initialize the LLM client based on provider"""
-        client_config, model = self.config.llm.get_client_config()
-        
-        # Extract base_url if present
-        base_url = client_config.pop("base_url", None)
-        
-        # Create OpenAI client
-        if base_url:
-            self.client = OpenAI(base_url=base_url, **client_config)
-        else:
-            self.client = OpenAI(**client_config)
-        
-        self.model = model
+        self.backend = self.config.llm.resolve_backend()
+        self.client = OpenAI(
+            api_key=self.backend.api_key,
+            base_url=self.backend.base_url,
+        )
+        self.model = self.backend.model
         logger.info(f"Using model: {self.model}")
     
     def _get_system_prompt(self) -> str:
@@ -265,7 +247,7 @@ Remember: Your credibility depends on providing accurate, well-cited information
                     messages=messages,
                     tools=self.tools,
                     tool_choice="auto",
-                    temperature=_reasoning_safe_temperature(self.model, self.config.llm.temperature),
+                    temperature=reasoning_safe_temperature(self.model, self.config.llm.temperature),
                     max_tokens=_reasoning_safe_max_tokens(self.model, self.config.llm.max_tokens),
                     stream=False  # We handle streaming separately
                 )
@@ -424,7 +406,7 @@ Please answer the question based only on the provided context. Include citations
                 response_stream = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    temperature=_reasoning_safe_temperature(self.model, self.config.llm.temperature),
+                    temperature=reasoning_safe_temperature(self.model, self.config.llm.temperature),
                     max_tokens=_reasoning_safe_max_tokens(self.model, self.config.llm.max_tokens),
                     stream=True
                 )
@@ -439,7 +421,7 @@ Please answer the question based only on the provided context. Include citations
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    temperature=_reasoning_safe_temperature(self.model, self.config.llm.temperature),
+                    temperature=reasoning_safe_temperature(self.model, self.config.llm.temperature),
                     max_tokens=_reasoning_safe_max_tokens(self.model, self.config.llm.max_tokens),
                     stream=False
                 )

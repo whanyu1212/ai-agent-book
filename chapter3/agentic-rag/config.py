@@ -2,48 +2,14 @@
 
 import os
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any
+from typing import Optional
 from enum import Enum
 from dotenv import load_dotenv
 
+from agentbook.providers import Backend, canonical_provider
+from agentbook.providers import resolve_backend as resolve_provider_backend
+
 load_dotenv()
-
-
-def _openrouter_model_id(model: Optional[str]) -> str:
-    """Map a provider-native model name to an OpenRouter model id, used by the
-    universal OpenRouter fallback. An explicit OPENROUTER_MODEL env var wins."""
-    override = os.getenv("OPENROUTER_MODEL")
-    if override:
-        return override
-    m = (model or "").strip()
-    if not m:
-        return "openai/gpt-5.6-luna"
-    if "/" in m:
-        return m  # already an OpenRouter-style id (e.g. openai/gpt-5.6-luna)
-    ml = m.lower()
-    if ml.startswith(("gpt-", "o1", "o3", "o4", "chatgpt")):
-        return "openai/" + m
-    if ml.startswith("claude-"):
-        return "anthropic/claude-opus-4.8"
-    if ml.startswith("kimi"):
-        # kimi-k3 is not on OpenRouter; moonshotai/kimi-k2.6 is the closest hosted id.
-        return "moonshotai/kimi-k2.6"
-    # Provider-native ids (kimi-*/doubao-*/qwen/deepseek-*) not hosted on
-    # OpenRouter under the same name -> a widely-available OpenAI chat model.
-    return "openai/gpt-5.6-luna"
-
-
-class Provider(str, Enum):
-    """Supported LLM providers"""
-    SILICONFLOW = "siliconflow"
-    DOUBAO = "doubao"
-    KIMI = "kimi"
-    MOONSHOT = "moonshot"
-    OPENROUTER = "openrouter"
-    OPENAI = "openai"
-    GROQ = "groq"
-    TOGETHER = "together"
-    DEEPSEEK = "deepseek"
 
 
 class KnowledgeBaseType(str, Enum):
@@ -65,97 +31,24 @@ class LLMConfig:
     max_tokens: int = 1024
     stream: bool = True
     
-    # Provider-specific defaults
-    PROVIDER_DEFAULTS = {
-        "siliconflow": {
-            "model": "Qwen/Qwen3-235B-A22B-Thinking-2507",
-            "base_url": "https://api.siliconflow.cn/v1"
-        },
-        "doubao": {
-            "model": "doubao-seed-1-6-thinking-250715",
-            "base_url": "https://ark.cn-beijing.volces.com/api/v3"
-        },
-        "kimi": {
-            "model": "kimi-k3",
-            "base_url": "https://api.moonshot.cn/v1"
-        },
-        "moonshot": {
-            "model": "kimi-k3",
-            "base_url": "https://api.moonshot.cn/v1"
-        },
-        "openrouter": {
-            "model": "openai/gpt-5.6-luna",
-            "base_url": "https://openrouter.ai/api/v1"
-        },
-        "openai": {
-            "model": "gpt-5.6-luna",
-            "base_url": "https://api.openai.com/v1"
-        },
-        "groq": {
-            "model": "llama-3.3-70b-versatile",
-            "base_url": "https://api.groq.com/openai/v1"
-        },
-        "together": {
-            "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-            "base_url": "https://api.together.xyz"
-        },
-        "deepseek": {
-            "model": "deepseek-reasoner",
-            "base_url": "https://api.deepseek.com/v1"
-        }
+    # Experiment-specific defaults stay local; credentials, endpoints, aliases,
+    # and fallback behavior are owned by agentbook.providers.
+    PROVIDER_MODEL_DEFAULTS = {
+        "siliconflow": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+        "doubao": "doubao-seed-1-6-thinking-250715",
+        "kimi": "kimi-k3",
+        "openrouter": "openai/gpt-5.6-luna",
+        "openai": "gpt-5.6-luna",
+        "groq": "llama-3.3-70b-versatile",
+        "together": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        "deepseek": "deepseek-reasoner",
     }
-    
-    @classmethod
-    def get_api_key(cls, provider: str) -> Optional[str]:
-        """Get API key from environment"""
-        env_mappings = {
-            "siliconflow": "SILICONFLOW_API_KEY",
-            "doubao": "ARK_API_KEY",
-            "kimi": "MOONSHOT_API_KEY",
-            "moonshot": "MOONSHOT_API_KEY",
-            "openrouter": "OPENROUTER_API_KEY",
-            "openai": "OPENAI_API_KEY",
-            "groq": "GROQ_API_KEY",
-            "together": "TOGETHER_API_KEY",
-            "deepseek": "DEEPSEEK_API_KEY"
-        }
-        return os.getenv(env_mappings.get(provider.lower(), ""))
-    
-    def get_client_config(self) -> Dict[str, Any]:
-        """Get OpenAI client configuration"""
-        provider_lower = self.provider.lower()
-        defaults = self.PROVIDER_DEFAULTS.get(provider_lower, {})
-        
-        # Get API key
-        api_key = self.api_key or self.get_api_key(provider_lower)
 
-        # Universal OpenRouter fallback: primary provider key absent but
-        # OPENROUTER_API_KEY present -> route through OpenRouter.
-        if not api_key and provider_lower != "openrouter" and os.getenv("OPENROUTER_API_KEY"):
-            model = _openrouter_model_id(self.model or defaults.get("model"))
-            return {
-                "api_key": os.getenv("OPENROUTER_API_KEY"),
-                "base_url": "https://openrouter.ai/api/v1",
-            }, model
-
-        if not api_key:
-            raise ValueError(
-                f"API key required for provider '{provider_lower}'. Set the "
-                f"provider's key (e.g. MOONSHOT_API_KEY / OPENAI_API_KEY) or "
-                f"OPENROUTER_API_KEY to use the OpenRouter fallback."
-            )
-
-        # Build config
-        config = {
-            "api_key": api_key,
-            "model": self.model or defaults.get("model")
-        }
-
-        # Add base_url if not OpenAI
-        if "base_url" in defaults:
-            config["base_url"] = defaults["base_url"]
-
-        return config, config.pop("model")
+    def resolve_backend(self) -> Backend:
+        """Resolve the configured provider into a ready-to-use backend."""
+        provider = canonical_provider(self.provider)
+        model = self.model or self.PROVIDER_MODEL_DEFAULTS.get(provider)
+        return resolve_provider_backend(provider, model=model, api_key=self.api_key)
 
 
 @dataclass
