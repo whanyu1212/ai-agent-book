@@ -11,7 +11,8 @@
   field alongside the final `content`. The agent reads the answer from `content`
   (FINAL ANSWER detection unchanged), calls with `max_tokens=8192` (well above the
   reasoning minimum of 2048), and forces `temperature=1` for reasoning models via
-  `_reasoning_safe_temperature()` (kimi-k3 / gpt-5). Assistant turns are replayed
+  the shared `reasoning_safe_temperature()` policy (kimi-k3 / gpt-5). Assistant
+  turns are replayed
   with `model_dump()` (which includes `reasoning_content`); the Moonshot API accepts
   this on follow-up calls, so multi-turn tool loops work unchanged.
 - **Offline status-bar preview** (`python main.py --mode preview`): renders all five

@@ -22,19 +22,14 @@ import tempfile
 import shutil
 from pathlib import Path
 
+from agentbook.model_policy import reasoning_safe_temperature
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
     pass
 
-
-def _reasoning_safe_temperature(model, requested=1.0):
-    """Reasoning models (Kimi K3, GPT-5, ...) only accept temperature=1.
-    Return 1 for those; otherwise the requested value so non-reasoning
-    providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
-    m = str(model or "").lower().replace("/", "-")
-    return 1 if ("kimi-k3" in m or "gpt-5" in m) else requested
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -856,7 +851,7 @@ Important: When you have completed all tasks, clearly state "FINAL ANSWER:" foll
                     messages=messages_to_send,
                     tools=self._get_tools_description(),
                     tool_choice="auto",
-                    temperature=_reasoning_safe_temperature(self.model, 0.3),
+                    temperature=reasoning_safe_temperature(self.model, 0.3),
                     max_tokens=8192
                 )
                 
