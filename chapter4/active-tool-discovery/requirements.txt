@@ -1,3 +1,7 @@
+# Shared provider resolution from the repository root. Run this file from the
+# experiment directory, as shown in the README.
+-e ../..
+
 openai>=1.30.0
 tiktoken>=0.5.0
 python-dotenv>=1.0.0
