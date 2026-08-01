@@ -209,6 +209,20 @@ def test_openrouter_model_override_does_not_change_direct_provider_model(
     ("openrouter", "OPENROUTER_API_KEY"),
     ("together", "TOGETHER_API_KEY"),
 ])
+def test_direct_aggregator_keeps_unknown_model_without_override(
+    monkeypatch, provider, key_var
+):
+    monkeypatch.setenv(key_var, f"test-{provider}-key")
+
+    backend = LLMConfig(provider=provider, model="private-model-v1").resolve_backend()
+
+    assert backend.model == "private-model-v1"
+
+
+@pytest.mark.parametrize("provider,key_var", [
+    ("openrouter", "OPENROUTER_API_KEY"),
+    ("together", "TOGETHER_API_KEY"),
+])
 @pytest.mark.parametrize("override", ["", "   "])
 def test_empty_openrouter_model_does_not_clear_direct_provider_model(
     monkeypatch, provider, key_var, override

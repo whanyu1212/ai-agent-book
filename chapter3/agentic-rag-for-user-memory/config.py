@@ -121,22 +121,12 @@ class LLMConfig:
             and provider_spec
             and provider_spec.namespaces_models
             and model
-            and not (backend.model or "").strip()
-        ):
-            # The shared mapper treats an explicitly empty environment value as
-            # an override. Preserve the requested direct-provider model instead.
-            return replace(backend, model=model)
-        if (
-            not using_fallback
-            and provider_spec
-            and provider_spec.namespaces_models
-            and override
-            and backend.model == override
             and map_model_to_openrouter(model) == model
+            and backend.model != model
         ):
             # Direct aggregators still namespace known bare model ids. Preserve
-            # only the old behavior for unknown ids, so OPENROUTER_MODEL remains
-            # a fallback-only override in this experiment.
+            # explicit unknown ids rather than allowing an environment override
+            # or shared default to silently select a different model.
             return replace(backend, model=model)
         return backend
 
