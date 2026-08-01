@@ -1,11 +1,19 @@
 """Configuration for Agentic RAG User Memory Evaluation System"""
 
 import os
-from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, List
+from dataclasses import dataclass, field, replace
 from enum import Enum
-from pathlib import Path
+from typing import ClassVar, Optional
+
 from dotenv import load_dotenv
+
+from agentbook.providers import (
+    PROVIDERS,
+    Backend,
+    canonical_provider,
+    map_model_to_openrouter,
+)
+from agentbook.providers import resolve_backend as resolve_provider_backend
 
 load_dotenv()
 
@@ -16,30 +24,6 @@ def _reasoning_safe_temperature(model, requested=1.0):
     providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
     m = str(model or "").lower().replace("/", "-")
     return 1 if ("kimi-k3" in m or "gpt-5" in m) else requested
-
-
-def _openrouter_model_id(model: Optional[str]) -> str:
-    """Map a provider-native model name to an OpenRouter model id, used by the
-    universal OpenRouter fallback. An explicit OPENROUTER_MODEL env var wins."""
-    override = os.getenv("OPENROUTER_MODEL")
-    if override:
-        return override
-    m = (model or "").strip()
-    if not m:
-        return "openai/gpt-5.6-luna"
-    if "/" in m:
-        return m  # already an OpenRouter-style id (e.g. openai/gpt-5.6-luna)
-    ml = m.lower()
-    if ml.startswith(("gpt-", "o1", "o3", "o4", "chatgpt")):
-        return "openai/" + m
-    if ml.startswith("claude-"):
-        return "anthropic/claude-opus-4.8"
-    if ml.startswith("kimi"):
-        # kimi-k3 is not on OpenRouter; moonshotai/kimi-k2.6 is the closest hosted id.
-        return "moonshotai/kimi-k2.6"
-    # Provider-native ids (kimi-*/doubao-*/qwen/deepseek-*) not hosted on
-    # OpenRouter under the same name -> a widely-available OpenAI chat model.
-    return "openai/gpt-5.6-luna"
 
 
 class Provider(str, Enum):
@@ -79,75 +63,90 @@ class LLMConfig:
     max_tokens: int = 2048
     stream: bool = True
     
-    # Provider-specific defaults
-    PROVIDER_DEFAULTS = {
-        "siliconflow": {
-            "model": "Qwen/Qwen3-235B-A22B-Thinking-2507",
-            "base_url": "https://api.siliconflow.cn/v1"
-        },
-        "doubao": {
-            "model": "doubao-seed-1-6-thinking-250715",
-            "base_url": "https://ark.cn-beijing.volces.com/api/v3"
-        },
-        "kimi": {
-            "model": "kimi-k3",
-            "base_url": "https://api.moonshot.cn/v1"
-        },
-        "moonshot": {
-            "model": "kimi-k3",
-            "base_url": "https://api.moonshot.cn/v1"
-        },
-        "openrouter": {
-            "model": "openai/gpt-5.6-luna",
-            "base_url": "https://openrouter.ai/api/v1"
-        },
-        "openai": {
-            "model": "gpt-5.6-luna",
-            "base_url": "https://api.openai.com/v1"
-        },
-        "groq": {
-            "model": "llama-3.3-70b-versatile",
-            "base_url": "https://api.groq.com/openai/v1"
-        },
-        "together": {
-            "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-            "base_url": "https://api.together.xyz"
-        },
-        "deepseek": {
-            "model": "deepseek-reasoner",
-            "base_url": "https://api.deepseek.com/v1"
-        }
+    # Experiment-specific defaults stay local; credentials, endpoints, aliases,
+    # and fallback behavior are owned by agentbook.providers.
+    PROVIDER_MODEL_DEFAULTS: ClassVar[dict[str, str]] = {
+        "siliconflow": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+        "doubao": "doubao-seed-1-6-thinking-250715",
+        "kimi": "kimi-k3",
+        "openrouter": "openai/gpt-5.6-luna",
+        "openai": "gpt-5.6-luna",
+        "groq": "llama-3.3-70b-versatile",
+        "together": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        "deepseek": "deepseek-reasoner",
     }
-    
-    def get_client_config(self) -> tuple[Dict[str, Any], str]:
-        """Get OpenAI client configuration"""
-        provider = self.provider.lower()
-        defaults = self.PROVIDER_DEFAULTS.get(provider, {})
-        
-        # Determine API key
-        api_key = self.api_key or os.getenv(f"{provider.upper()}_API_KEY")
-        if not api_key and provider == "moonshot":
-            api_key = os.getenv("KIMI_API_KEY")  # Fallback for moonshot
 
-        # Determine model
-        model = self.model or defaults.get("model", "gpt-5.6-luna")
+    def resolve_backend(self) -> Backend:
+        """Resolve the configured provider into a ready-to-use backend."""
+        provider = canonical_provider(self.provider)
+        model = self.model or self.PROVIDER_MODEL_DEFAULTS.get(provider)
+        provider_spec = PROVIDERS.get(provider)
+        legacy_doubao_key = os.getenv("DOUBAO_API_KEY", "").strip()
+        ark_key = os.getenv("ARK_API_KEY", "").strip()
+        api_key = (self.api_key or "").strip() or (
+            (ark_key or legacy_doubao_key) if provider == "doubao" else None
+        )
+        primary_key = api_key or (
+            provider_spec.api_key() if provider_spec else ""
+        )
+        backend = resolve_provider_backend(provider, model=model, api_key=api_key)
 
-        # Universal OpenRouter fallback: primary provider key absent but
-        # OPENROUTER_API_KEY present -> route through OpenRouter.
-        if not api_key and provider != "openrouter" and os.getenv("OPENROUTER_API_KEY"):
-            return {
-                "api_key": os.getenv("OPENROUTER_API_KEY"),
-                "base_url": "https://openrouter.ai/api/v1",
-            }, _openrouter_model_id(model)
+        # The shared resolver routes GPT-5 through OpenRouter for providers
+        # other than OpenAI. This experiment historically used an explicit
+        # provider credential directly, so retain that precedence contract.
+        if primary_key and provider != "openrouter" and backend.using_openrouter:
+            direct_model = model or backend.model
+            if provider_spec.namespaces_models:
+                direct_model = map_model_to_openrouter(direct_model)
+            backend = Backend(
+                api_key=primary_key,
+                base_url=provider_spec.resolved_base_url(),
+                model=direct_model,
+                provider=provider_spec.name,
+                using_openrouter=False,
+            )
 
-        # Build client config
-        client_config = {"api_key": api_key}
-        
-        # Add base URL if needed
-        if base_url := defaults.get("base_url"):
-            client_config["base_url"] = base_url
-        
-        return client_config, model
+        override = os.getenv("OPENROUTER_MODEL", "").strip()
+        using_fallback = (
+            backend.using_openrouter
+            and not primary_key
+            and provider != "openrouter"
+        )
+        if using_fallback and override:
+            # This experiment documented OPENROUTER_MODEL before the shared
+            # resolver existed, so retain that fallback-only override locally.
+            return replace(backend, model=override)
+        if (
+            not using_fallback
+            and provider_spec
+            and provider_spec.namespaces_models
+            and model
+            and not (backend.model or "").strip()
+        ):
+            # The shared mapper treats an explicitly empty environment value as
+            # an override. Preserve the requested direct-provider model instead.
+            return replace(backend, model=model)
+        if (
+            not using_fallback
+            and provider_spec
+            and provider_spec.namespaces_models
+            and override
+            and backend.model == override
+            and map_model_to_openrouter(model) == model
+        ):
+            # Direct aggregators still namespace known bare model ids. Preserve
+            # only the old behavior for unknown ids, so OPENROUTER_MODEL remains
+            # a fallback-only override in this experiment.
+            return replace(backend, model=model)
+        return backend
+
+    def get_client_config(self) -> tuple[dict[str, str], str]:
+        """Return the legacy OpenAI-client tuple from the resolved backend."""
+        backend = self.resolve_backend()
+        return {
+            "api_key": backend.api_key,
+            "base_url": backend.base_url,
+        }, backend.model
 
 
 @dataclass

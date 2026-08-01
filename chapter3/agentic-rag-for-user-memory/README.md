@@ -268,4 +268,12 @@ Top-k 需同时设 `top_k` 与 `rerank_top_k`；流水线不可达时用 `--back
 
 ### OpenRouter 通用回退 / Universal OpenRouter fallback
 
-If primary keys are absent and `OPENROUTER_API_KEY` is set, chat LLM routes through OpenRouter with automatic model mapping. See `env.example`.
+Chat credentials, endpoints, aliases, and fallback behavior are resolved by
+`agentbook.providers`, while this experiment retains its own default models.
+`DOUBAO_API_KEY` remains supported alongside `ARK_API_KEY` for existing
+configurations.
+
+If primary keys are absent and `OPENROUTER_API_KEY` is set, chat LLM routes
+through OpenRouter. Known model ids are mapped; unknown ids remain unchanged
+instead of silently selecting another model. `OPENROUTER_MODEL` remains a
+fallback-only compatibility override. See `env.example`.
