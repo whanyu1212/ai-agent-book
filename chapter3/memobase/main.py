@@ -12,10 +12,7 @@ from typing import Optional
 
 from agent import MemobaseAgent
 from locomo_benchmark import LOCOMOBenchmark, BenchmarkTask
-from config import (
-    KIMI_API_KEY, LOG_LEVEL, LOG_FORMAT, 
-    MEMORY_DB_PATH, LOCOMO_CONFIG
-)
+from config import LOG_LEVEL, LOG_FORMAT, MEMORY_DB_PATH, LOCOMO_CONFIG
 
 # Configure logging
 logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
@@ -236,8 +233,10 @@ def main():
     parser.add_argument(
         "--api-key",
         type=str,
-        default=KIMI_API_KEY,
-        help="Kimi API key"
+        help=(
+            "Kimi or Moonshot API key; omit to use KIMI_API_KEY, "
+            "MOONSHOT_API_KEY, or the OpenRouter fallback"
+        ),
     )
     
     parser.add_argument(
@@ -279,7 +278,7 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Initialize agent
-    print("\n🚀 Initializing Memobase Agent with Kimi K3...")
+    print("\n🚀 Initializing Memobase Agent...")
     agent = MemobaseAgent(api_key=args.api_key)
     
     if args.no_memory:

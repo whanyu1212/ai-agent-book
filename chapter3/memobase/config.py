@@ -1,10 +1,12 @@
-"""
-Configuration for Memobase Agent with Kimi K3 Model
-"""
+"""Configuration for the Memobase-inspired agent and its Kimi backend."""
 
 import os
+from dataclasses import replace
 from pathlib import Path
+
 from dotenv import load_dotenv
+
+from agentbook.providers import Backend, resolve_backend
 
 # Load environment variables
 load_dotenv()
@@ -33,16 +35,31 @@ def _openrouter_model_id(model) -> str:
 
 
 # Kimi K3 Model Configuration
+# Keep this export for callers that read the legacy setting. Runtime resolution
+# below rereads the environment so test and CLI overrides are not stale.
 KIMI_API_KEY = os.getenv("KIMI_API_KEY", "") or os.getenv("MOONSHOT_API_KEY", "")
 KIMI_BASE_URL = "https://api.moonshot.cn/v1"
 KIMI_MODEL = "kimi-k3"  # Kimi K3 model identifier
 
-# Universal OpenRouter fallback: primary key (KIMI/MOONSHOT) absent but
-# OPENROUTER_API_KEY present -> route the chat LLM through OpenRouter.
-if not KIMI_API_KEY and os.getenv("OPENROUTER_API_KEY"):
-    KIMI_API_KEY = os.getenv("OPENROUTER_API_KEY")
-    KIMI_BASE_URL = "https://openrouter.ai/api/v1"
-    KIMI_MODEL = _openrouter_model_id(KIMI_MODEL)
+
+def _preferred_kimi_api_key() -> str:
+    """Keep Memobase's historical KIMI_API_KEY-first precedence."""
+    return os.getenv("KIMI_API_KEY", "").strip() or os.getenv("MOONSHOT_API_KEY", "").strip()
+
+
+def resolve_memobase_backend(api_key: str | None = None) -> Backend:
+    """Resolve the hand-rolled agent backend without changing its contracts.
+
+    The shared registry normally checks ``MOONSHOT_API_KEY`` before the legacy
+    ``KIMI_API_KEY``. This experiment documented the reverse order, so pass its
+    preferred direct key explicitly. Its OpenRouter fallback also historically
+    honored ``OPENROUTER_MODEL``; retain that behavior only after fallback.
+    """
+    direct_key = (api_key or "").strip() or _preferred_kimi_api_key()
+    backend = resolve_backend("kimi", api_key=direct_key or None)
+    if backend.using_openrouter:
+        return replace(backend, model=_openrouter_model_id(KIMI_MODEL))
+    return backend
 
 # Model Parameters
 MODEL_TEMPERATURE = 0.7
