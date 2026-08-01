@@ -12,7 +12,7 @@
 ### Two tracks in this folder — don’t confuse them
 
 1. **Real Memobase framework demo** (`profile_demo.py`) — uses the actual open-source Memobase SDK (`pip install memobase`, package `memobase>=0.0.27`) against a **running Memobase server**. Canonical demo of Memobase’s *Profile* (structured user attributes) + *Event Memory* (timeline). See [Memobase Profile + Event Demo](#memobase-profile--event-demo-real-sdk).  
-2. **Hand-rolled memory agent** (`agent.py` / `main.py`) — self-contained *Memobase-inspired* `MemoryStore` (episodic / semantic / procedural / working, pickle-persisted) calling Kimi directly. **No Memobase server**—only `KIMI_API_KEY`. The `--mode` commands (interactive / benchmark / demo / task) drive this agent.
+2. **Hand-rolled memory agent** (`agent.py` / `main.py`) — self-contained *Memobase-inspired* `MemoryStore` (episodic / semantic / procedural / working, pickle-persisted) calling Kimi through the shared provider resolver. **No Memobase server**—configure `KIMI_API_KEY` or `MOONSHOT_API_KEY`; `OPENROUTER_API_KEY` is a fallback. The `--mode` commands (interactive / benchmark / demo / task) drive this agent.
 
 ### Features (hand-rolled agent)
 
@@ -45,7 +45,7 @@ cd chapter3/memobase
 # python -m pip install -r requirements.txt
 
 cp env.example .env
-# Add Kimi API key (hand-rolled agent)
+# Add a Kimi or Moonshot API key (hand-rolled agent)
 ```
 
 Edit `config.py` for model, memory thresholds, benchmark, logging.
@@ -127,7 +127,7 @@ Benchmark outputs under `benchmark_results/`. Extend tools / memory types in `co
 
 ### Troubleshooting
 
-1. API key: `KIMI_API_KEY` in `.env`  
+1. API key: `KIMI_API_KEY` or `MOONSHOT_API_KEY` in `.env`; `OPENROUTER_API_KEY` is a fallback
 2. Memory overflow: lower `MAX_MEMORY_ENTRIES`, more aggressive compression, manual consolidation  
 3. Slow: reduce `MODEL_MAX_TOKENS`, enable cache, category-specific benchmarks  
 
@@ -142,7 +142,7 @@ MIT-style educational use. Kimi by Moonshot AI; Memobase concepts; LOCOMO-inspir
 ### 本目录两条线——不要搞混
 
 1. **真实 Memobase 框架演示**（`profile_demo.py`）——官方开源 SDK（`memobase>=0.0.27`）对接**正在运行的 Memobase 服务**，展示书中的 *Profile*（结构化用户属性）+ *Event Memory*（时间线）。见下文 Profile + Event 演示。  
-2. **手写记忆 Agent**（`agent.py` / `main.py`）——自包含、受 Memobase 启发的 `MemoryStore`（情景 / 语义 / 程序 / 工作记忆，pickle 持久化），直接调 Kimi。**不需要 Memobase 服务**，只要 `KIMI_API_KEY`。`--mode`（interactive / benchmark / demo / task）驱动的是这条线。
+2. **手写记忆 Agent**（`agent.py` / `main.py`）——自包含、受 Memobase 启发的 `MemoryStore`（情景 / 语义 / 程序 / 工作记忆，pickle 持久化），通过共享 provider resolver 调 Kimi。**不需要 Memobase 服务**，配置 `KIMI_API_KEY` 或 `MOONSHOT_API_KEY` 即可；`OPENROUTER_API_KEY` 可作为回退。`--mode`（interactive / benchmark / demo / task）驱动的是这条线。
 
 ### 手写 Agent 功能
 
@@ -172,7 +172,7 @@ cd chapter3/memobase
 # python -m pip install -r requirements.txt
 
 cp env.example .env
-# 手写 Agent 填写 Kimi API Key
+# 手写 Agent 填写 Kimi 或 Moonshot API Key
 ```
 
 在 `config.py` 中调整模型、记忆阈值、基准与日志。

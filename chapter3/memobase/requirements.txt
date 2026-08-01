@@ -2,6 +2,7 @@
 # memory). Talks to a running Memobase server (self-hosted via docker compose,
 # default http://localhost:8019, or the Memobase cloud). The hand-rolled
 # MemoryStore agent (agent.py/main.py) does NOT need this package.
+-e ../..
 memobase>=0.0.27
 
 openai>=1.45.0

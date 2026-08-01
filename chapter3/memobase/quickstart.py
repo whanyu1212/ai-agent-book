@@ -2,7 +2,6 @@
 Quick start script for testing Memobase Agent
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -10,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from agent import MemobaseAgent
+from config import resolve_memobase_backend
 from locomo_benchmark import LOCOMOBenchmark, BenchmarkTask
 
 
@@ -20,13 +20,20 @@ def quick_demo():
     print("MEMOBASE AGENT - Quick Start Demo")
     print("=" * 60)
     
-    # Check for API key
-    api_key = os.getenv("KIMI_API_KEY", "")
-    if not api_key or api_key == "your-kimi-api-key":
-        print("\n⚠️  Warning: KIMI_API_KEY not set properly!")
-        print("Please set your API key in .env file or as environment variable")
+    # Resolve once for preflight, but do not pass a fallback key back as a
+    # Kimi key: MemobaseAgent resolves the selected endpoint itself.
+    api_key = None
+    demo_mode = False
+    try:
+        backend = resolve_memobase_backend()
+        if backend.api_key.startswith(("your-", "your_")):
+            raise ValueError("placeholder API key")
+    except ValueError:
+        print("\n⚠️  Warning: no usable Kimi, Moonshot, or OpenRouter API key is set!")
+        print("Please set an API key in .env or as an environment variable")
         print("\nContinuing with demo setup...")
         api_key = "demo-key"  # Use demo key for structure demonstration
+        demo_mode = True
     
     try:
         # Initialize agent
@@ -53,7 +60,7 @@ def quick_demo():
         
         for msg in test_messages:
             print(f"\n👤 User: {msg}")
-            if api_key != "demo-key":
+            if not demo_mode:
                 response = agent.process_message(msg)
                 print(f"🤖 Agent: {response}")
             else:
@@ -121,7 +128,7 @@ def quick_demo():
         
         print(f"📝 Task: {task.query}")
         
-        if api_key != "demo-key":
+        if not demo_mode:
             # Initialize mini benchmark
             benchmark = LOCOMOBenchmark()
             benchmark.tasks = [task]
@@ -142,7 +149,7 @@ def quick_demo():
         print("✅ Quick Start Demo Complete!")
         print("=" * 60)
         print("\nNext steps:")
-        print("1. Set your KIMI_API_KEY in .env file")
+        print("1. Set KIMI_API_KEY, MOONSHOT_API_KEY, or OPENROUTER_API_KEY in .env")
         print("2. Run 'python main.py --mode interactive' for full interaction")
         print("3. Run 'python main.py --mode benchmark' for complete evaluation")
         print("4. Check README.md for detailed documentation")
@@ -151,7 +158,7 @@ def quick_demo():
         print(f"\n❌ Error during demo: {str(e)}")
         print("\nTroubleshooting:")
         print("1. Ensure all dependencies are installed: pip install -r requirements.txt")
-        print("2. Check that KIMI_API_KEY is properly set")
+        print("2. Check that your configured API key is properly set")
         print("3. Verify network connectivity for API calls")
 
 

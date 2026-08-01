@@ -1,7 +1,4 @@
-"""
-Memobase Agent Implementation with Kimi K3 Model
-Advanced memory management for LOCOMO benchmark
-"""
+"""Memobase-inspired agent with Kimi and OpenRouter fallback support."""
 
 import json
 import logging
@@ -16,11 +13,10 @@ from collections import defaultdict
 from openai import OpenAI
 
 from config import (
-    KIMI_API_KEY, KIMI_BASE_URL, KIMI_MODEL,
     MODEL_TEMPERATURE, MODEL_MAX_TOKENS, MODEL_TOP_P,
     MEMOBASE_CONFIG, MEMORY_DB_PATH, AGENT_CONFIG,
     MAX_MEMORY_ENTRIES, MEMORY_COMPRESSION_THRESHOLD,
-    LOG_LEVEL, LOG_FORMAT
+    LOG_LEVEL, LOG_FORMAT, resolve_memobase_backend,
 )
 
 
@@ -255,13 +251,14 @@ class MemobaseAgent:
     Advanced agent with Memobase memory management for LOCOMO benchmark
     """
     
-    def __init__(self, api_key: str = KIMI_API_KEY):
+    def __init__(self, api_key: Optional[str] = None):
         """Initialize the Memobase agent"""
+        self.backend = resolve_memobase_backend(api_key)
         self.client = OpenAI(
-            api_key=api_key,
-            base_url=KIMI_BASE_URL
+            api_key=self.backend.api_key,
+            base_url=self.backend.base_url,
         )
-        self.model = KIMI_MODEL
+        self.model = self.backend.model
         self.memory_store = MemoryStore()
         self.conversation_history = []
         self.current_task = None
