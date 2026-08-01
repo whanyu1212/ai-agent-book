@@ -93,18 +93,12 @@ class UserMemoryRAGAgent:
     
     def _init_llm_client(self):
         """Initialize the LLM client based on provider"""
-        client_config, model = self.config.llm.get_client_config()
-        
-        # Extract base_url if present
-        base_url = client_config.pop("base_url", None)
-        
-        # Create OpenAI client
-        if base_url:
-            self.client = OpenAI(base_url=base_url, **client_config)
-        else:
-            self.client = OpenAI(**client_config)
-        
-        self.model = model
+        self.backend = self.config.llm.resolve_backend()
+        self.client = OpenAI(
+            api_key=self.backend.api_key,
+            base_url=self.backend.base_url,
+        )
+        self.model = self.backend.model
         logger.info(f"Using model: {self.model}")
     
     def _get_system_prompt(self, test_id: str) -> str:

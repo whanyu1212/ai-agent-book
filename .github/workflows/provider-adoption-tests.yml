@@ -16,6 +16,7 @@ on:
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
       - "chapter3/agentic-rag/**"
+      - "chapter3/agentic-rag-for-user-memory/**"
       - "chapter3/contextual-retrieval/**"
       - "chapter3/log-sanitization/**"
       - "chapter4/active-tool-discovery/**"
@@ -30,6 +31,7 @@ on:
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
       - "chapter3/agentic-rag/**"
+      - "chapter3/agentic-rag-for-user-memory/**"
       - "chapter3/contextual-retrieval/**"
       - "chapter3/log-sanitization/**"
       - "chapter4/active-tool-discovery/**"
@@ -157,6 +159,71 @@ jobs:
           test_client_initialization.py
           test_request_policy.py
           test_history_limit_zero.py
+
+  agentic-rag-user-memory:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the package
+        working-directory: chapter3/agentic-rag-for-user-memory
+        run: >-
+          python -m pip install
+          -r requirements.txt
+          "pytest>=7.4"
+
+      # The unrestricted suite includes a live-key logging script and a live
+      # retrieval-pipeline probe. Keep this provider-adoption contract offline.
+      - name: Run user-memory provider tests
+        working-directory: chapter3/agentic-rag-for-user-memory
+        env:
+          SILICONFLOW_API_KEY: ""
+          DOUBAO_API_KEY: ""
+          ARK_API_KEY: ""
+          KIMI_API_KEY: ""
+          MOONSHOT_API_KEY: ""
+          KIMI_BASE_URL: ""
+          OPENROUTER_API_KEY: ""
+          OPENROUTER_MODEL: ""
+          OPENROUTER_BASE_URL: ""
+          OPENAI_API_KEY: ""
+          OPENAI_BASE_URL: ""
+          GROQ_API_KEY: ""
+          TOGETHER_API_KEY: ""
+          DEEPSEEK_API_KEY: ""
+        run: >-
+          python -m pytest -q
+          test_provider_resolution.py
+          test_client_initialization.py
+          test_request_policy.py
+          test_top_k.py
+
+      - name: Run user-memory offline smoke test
+        working-directory: chapter3/agentic-rag-for-user-memory
+        env:
+          SILICONFLOW_API_KEY: ""
+          DOUBAO_API_KEY: ""
+          ARK_API_KEY: ""
+          KIMI_API_KEY: ""
+          MOONSHOT_API_KEY: ""
+          KIMI_BASE_URL: ""
+          OPENROUTER_API_KEY: ""
+          OPENROUTER_MODEL: ""
+          OPENROUTER_BASE_URL: ""
+          OPENAI_API_KEY: ""
+          OPENAI_BASE_URL: ""
+          GROQ_API_KEY: ""
+          TOGETHER_API_KEY: ""
+          DEEPSEEK_API_KEY: ""
+        run: >-
+          python main.py
+          --mode offline-demo
+          --test-id layer2_01_multiple_vehicles
 
   active-tool-discovery:
     runs-on: ubuntu-latest

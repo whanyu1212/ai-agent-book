@@ -1,3 +1,7 @@
+# Shared provider resolution from the repository root. Run this file from the
+# experiment directory, as shown in the README.
+-e ../..
+
 # Core dependencies
 openai>=1.0.0
 pyyaml>=6.0
