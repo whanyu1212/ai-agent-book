@@ -36,6 +36,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the shared package and this service from the repository-root build context.
+WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY agentbook ./agentbook
 COPY chapter4/collaboration-tools ./chapter4/collaboration-tools

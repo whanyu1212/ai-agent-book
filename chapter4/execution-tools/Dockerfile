@@ -94,6 +94,7 @@ RUN apt-get update && apt-get install -y bash && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the shared package and this service from the repository-root build context.
+WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY agentbook ./agentbook
 COPY chapter4/execution-tools ./chapter4/execution-tools
