@@ -35,16 +35,17 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3.13 1 && \
     rm -rf /var/lib/apt/lists/*
 
-# Set up working directory
+# Copy the shared package and this service from the repository-root build context.
 WORKDIR /app
+COPY pyproject.toml README.md ./
+COPY agentbook ./agentbook
+COPY chapter4/collaboration-tools ./chapter4/collaboration-tools
 
-# Copy requirements and install Python packages
-COPY requirements.txt .
+WORKDIR /app/chapter4/collaboration-tools
+
+# The local requirements file installs the root package at ../../.
 RUN python3 -m pip install --upgrade pip setuptools wheel && \
     python3 -m pip install -r requirements.txt
-
-# Copy application files
-COPY . .
 
 # Set environment variables
 ENV DISPLAY=:99

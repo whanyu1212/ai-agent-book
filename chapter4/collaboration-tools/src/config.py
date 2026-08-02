@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Optional
+from agentbook.env import read_int_env
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
@@ -13,15 +14,14 @@ load_dotenv()
 
 def _env_int(name: str, default: int) -> int:
     """Read an integer env var; fall back to default (with a warning) if malformed."""
-    raw = os.getenv(name)
-    if raw is None:
-        return default
-    try:
-        return int(raw)
-    except ValueError:
-        print(f"Warning: invalid {name}={raw!r} (must be an integer); using default {default}",
-              file=sys.stderr)
-        return default
+    return read_int_env(
+        name,
+        default,
+        on_invalid=lambda name, raw, default: print(
+            f"Warning: invalid {name}={raw!r} (must be an integer); using default {default}",
+            file=sys.stderr,
+        ),
+    )
 
 
 class BrowserConfig(BaseModel):

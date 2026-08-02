@@ -16,18 +16,18 @@ import time
 import asyncio
 import argparse
 import uvicorn
+from agentbook.env import read_int_env
 
 
 def _env_int(name: str, default: int) -> int:
     """Read an integer env var; fall back to default (with a warning) if malformed."""
-    raw = os.getenv(name)
-    if raw is None:
-        return default
-    try:
-        return int(raw)
-    except ValueError:
-        logger.warning(f"Invalid {name} value: {raw!r} (must be an integer); using default {default}")
-        return default
+    return read_int_env(
+        name,
+        default,
+        on_invalid=lambda name, raw, default: logger.warning(
+            f"Invalid {name} value: {raw!r} (must be an integer); using default {default}"
+        ),
+    )
 
 
 def _reasoning_safe_temperature(model, requested=1.0):
