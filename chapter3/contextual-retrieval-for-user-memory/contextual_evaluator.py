@@ -568,13 +568,8 @@ class ContextualMemoryEvaluator:
             from openai import OpenAI
             
             config = Config.from_env()
-            client_config, model = config.llm.get_client_config()
-            base_url = client_config.pop("base_url", None)
-            
-            if base_url:
-                client = OpenAI(base_url=base_url, **client_config)
-            else:
-                client = OpenAI(**client_config)
+            backend = config.llm.resolve_backend()
+            client = OpenAI(api_key=backend.api_key, base_url=backend.base_url)
             
             # Create evaluation prompt
             eval_prompt = f"""Evaluate the agent's response based on the test criteria.
@@ -594,12 +589,12 @@ Provide a JSON evaluation with:
 Respond with valid JSON only."""
             
             response = client.chat.completions.create(
-                model=model,
+                model=backend.model,
                 messages=[
                     {"role": "system", "content": "You are an evaluation judge. Evaluate if the agent's answer correctly addresses the user's question based on the criteria."},
                     {"role": "user", "content": eval_prompt}
                 ],
-                temperature=_reasoning_safe_temperature(model, 0.1),
+                temperature=_reasoning_safe_temperature(backend.model, 0.1),
                 response_format={"type": "json_object"}
             )
             

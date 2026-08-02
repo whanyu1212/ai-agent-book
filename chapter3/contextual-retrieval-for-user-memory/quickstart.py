@@ -26,8 +26,10 @@ def check_environment():
     # Check for at least one LLM provider
     llm_providers = [
         "KIMI_API_KEY",
+        "MOONSHOT_API_KEY",
         "SILICONFLOW_API_KEY", 
         "DOUBAO_API_KEY",
+        "ARK_API_KEY",
         "OPENROUTER_API_KEY"
     ]
     
@@ -127,7 +129,12 @@ def run_quick_demo():
 def main():
     """Main entry point"""
     console.print("\n[bold]Agentic RAG for User Memory Evaluation - Quick Start[/bold]\n")
-    
+
+    # The documented setup stores credentials in .env, so load it before the
+    # preflight checks inspect the process environment.
+    from dotenv import load_dotenv
+    load_dotenv(Path(".env"))
+
     # Check environment
     if not check_environment():
         sys.exit(1)
@@ -139,10 +146,6 @@ def main():
         shutil.copy("env.example", ".env")
         console.print("[red]Please edit .env file with your API keys and run again.[/red]")
         sys.exit(1)
-    
-    # Load environment variables
-    from dotenv import load_dotenv
-    load_dotenv()
     
     # Run the demo
     try:
