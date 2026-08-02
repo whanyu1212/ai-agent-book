@@ -147,15 +147,9 @@ class ContextualConversationChunker:
     
     def _init_llm_client(self):
         """Initialize LLM client for context generation"""
-        client_config, model = self.llm_config.get_client_config()
-        base_url = client_config.pop("base_url", None)
-        
-        if base_url:
-            self.client = OpenAI(base_url=base_url, **client_config)
-        else:
-            self.client = OpenAI(**client_config)
-        
-        self.model = model
+        self.backend = self.llm_config.resolve_backend()
+        self.client = OpenAI(api_key=self.backend.api_key, base_url=self.backend.base_url)
+        self.model = self.backend.model
         logger.info(f"Using {self.llm_config.provider} ({self.model}) for context generation")
     
     def contextualize_chunks(self,

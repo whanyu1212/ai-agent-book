@@ -267,14 +267,12 @@ class ContextualMemoryIndexer:
                 from openai import OpenAI
                 from config import Config
                 config = Config.from_env()
-                client_config, model = config.llm.get_client_config()
-                base_url = client_config.pop("base_url", None)
-                
-                if base_url:
-                    self._llm_client = OpenAI(base_url=base_url, **client_config)
-                else:
-                    self._llm_client = OpenAI(**client_config)
-                self._llm_model = model
+                self._llm_backend = config.llm.resolve_backend()
+                self._llm_client = OpenAI(
+                    api_key=self._llm_backend.api_key,
+                    base_url=self._llm_backend.base_url,
+                )
+                self._llm_model = self._llm_backend.model
             
             # Create extraction prompt
             extraction_prompt = f"""Analyze this conversation and extract structured memory cards.

@@ -140,9 +140,12 @@ Create a `.env` file:
 ```bash
 # LLM Provider Configuration
 MOONSHOT_API_KEY=your_api_key_here
+# KIMI_API_KEY is also accepted for backwards compatibility.
 ARK_API_KEY=your_api_key_here
+# DOUBAO_API_KEY is also accepted; ARK_API_KEY wins when both are set.
 SILICONFLOW_API_KEY=your_api_key_here
 OPENAI_API_KEY=your_api_key_here
+OPENROUTER_API_KEY=your_api_key_here  # Universal fallback
 
 # Default Provider
 LLM_PROVIDER=kimi  # Options: kimi, doubao, siliconflow, openai
@@ -413,9 +416,12 @@ cd chapter3/contextual-retrieval-for-user-memory
 ```bash
 # LLM Provider Configuration
 MOONSHOT_API_KEY=your_api_key_here
+# KIMI_API_KEY is also accepted for backwards compatibility.
 ARK_API_KEY=your_api_key_here
+# DOUBAO_API_KEY is also accepted; ARK_API_KEY wins when both are set.
 SILICONFLOW_API_KEY=your_api_key_here
 OPENAI_API_KEY=your_api_key_here
+OPENROUTER_API_KEY=your_api_key_here  # Universal fallback
 
 # Default Provider
 LLM_PROVIDER=kimi  # Options: kimi, doubao, siliconflow, openai
@@ -569,8 +575,9 @@ MIT License
 
 This experiment supports a **universal OpenRouter fallback** for its chat LLM.
 
-- If the primary provider key (e.g. `MOONSHOT_API_KEY` / `KIMI_API_KEY` / `OPENAI_API_KEY` / `DOUBAO_API_KEY` …) is present, behavior is unchanged.
-- Else if `OPENROUTER_API_KEY` is set, the chat LLM is automatically routed through OpenRouter (`https://openrouter.ai/api/v1`). Model names are mapped automatically: `gpt-*`/`o1-*` → `openai/…`, `claude-*` → `anthropic/claude-opus-4.8`, `kimi-*` → `moonshotai/kimi-k2.6`, ids already containing `/` are kept as-is, and other provider-native ids (e.g. `doubao-*`) fall back to `openai/gpt-5.6-luna`. Set `OPENROUTER_MODEL` to force a specific OpenRouter model id.
+- `MOONSHOT_API_KEY` and legacy `KIMI_API_KEY` are accepted for Kimi. For Doubao, `ARK_API_KEY` takes precedence over legacy `DOUBAO_API_KEY`.
+- If the primary provider key is present, the direct provider is used. Otherwise, `OPENROUTER_API_KEY` routes the chat LLM through OpenRouter (`https://openrouter.ai/api/v1`) with shared model mapping.
+- `OPENROUTER_MODEL` overrides the model only for this OpenRouter fallback, preserving direct-provider model selection.
 - Else a clear error lists the accepted keys.
 
 Add `OPENROUTER_API_KEY=...` to your `.env` (see `env.example`) to enable it.

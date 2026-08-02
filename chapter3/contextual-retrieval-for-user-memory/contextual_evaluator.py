@@ -568,13 +568,8 @@ class ContextualMemoryEvaluator:
             from openai import OpenAI
             
             config = Config.from_env()
-            client_config, model = config.llm.get_client_config()
-            base_url = client_config.pop("base_url", None)
-            
-            if base_url:
-                client = OpenAI(base_url=base_url, **client_config)
-            else:
-                client = OpenAI(**client_config)
+            backend = config.llm.resolve_backend()
+            client = OpenAI(api_key=backend.api_key, base_url=backend.base_url)
             
             # Create evaluation prompt
             eval_prompt = f"""Evaluate the agent's response based on the test criteria.
