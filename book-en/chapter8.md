@@ -226,6 +226,16 @@ The same idea extends to workflows and the entire Harness. AFlow represents work
 
 Higher levels are not automatically better. Searching for a local rule may require only a few edge cases, whereas searching an entire workflow or Harness faces a much larger candidate space, higher evaluation cost, and harder attribution. A clear, recurring fault localized to one component should first receive an auditable local patch. Only when local changes repeatedly fail to address a cross-component problem, or when the current management method itself becomes the bottleneck, is it worth moving outward to the workflow, Harness, or optimizer. At every level, evaluators, permission boundaries, and held-out tests must remain outside the editable scope—the larger the search space, the more important this trusted root becomes.
 
+> **Experiment 8-6 ★★★: Give Hermes This Book: Can It Upgrade Itself?**
+>
+> **Objective:** Test whether an Agent can turn external knowledge into an update to its own capabilities. The experiment supplies no problem statement and no feature checklist. Hermes receives all ten chapters and its own source, then must understand the principles, inspect its implementation, and choose a worthwhile improvement itself.
+>
+> **Design:** The book and source are readable context, while the stable version, independent Reviewer, and acceptance tests remain outside Hermes' editable scope. Hermes must complete **read → compare → choose → change → verify**. If a candidate is rejected, the review becomes input to the next learning round; Hermes cannot bypass the gate and declare success.
+>
+> **Real run:** After reading the book, Hermes independently noticed that its saved trajectories lacked structured evidence that later learning could use directly. It chose to turn execution outcomes into conservative learning signals, then edited its own source and added tests. The first three independent reviews found mismatches with real data formats, persistence paths, and counting semantics. Each finding went back to the original Hermes session for another correction; the fourth review accepted the candidate. Rejection was not the end of the experiment, but part of the improvement loop.
+>
+> **Claim boundary:** This run shows that an Agent can extract principles from long-form knowledge, map them onto its own code, and complete a self-update under external verification. It does not show that the update already improves downstream task success; that requires a separate ablation experiment. Reader Grace contributed the experiment idea.
+
 ## Building a Continual-Evolution Closed Loop for Long-Term Operation
 
 The four update methods become continual evolution rather than one-off optimization only when incorporated into the same autonomous loop. Figure 8-5 shows a more robust dual-loop architecture for production systems: the online execution loop only completes tasks and records evidence, without directly rewriting the production Agent; the offline evolution loop aggregates trajectories, diagnoses root causes, generates candidate modifications, and releases new versions only after they pass validation gates. The two loops are connected through versioned experience repositories and evaluation sets.
@@ -288,7 +298,7 @@ The same limitation appears in ordinary software engineering. Passing every unit
 
 An Agent’s self-evolution capability can turn a single error into a long-term risk. **If Prompt injection in web pages, email, or tool output is summarized as experience**, it may take effect repeatedly across sessions. If a malicious package found through automated search is wrapped as a tool, its impact can spread from one sandbox run to every subsequent task. A defective verifier may also continue approving candidates that appear to improve but actually regress. An Agent self-evolution system must therefore ask not only whether a candidate is stronger, but also who may modify what and what evidence justifies the change.
 
-The first boundary is **separating evidence from instructions**. Raw web pages and tool output are untrusted evidence and must not be written directly into a Skill or similar capability; an LLM must first summarize them. Writes should be version-controlled and submitted as pull requests, which are merged only after review by a reviewer LLM from a different source.
+The first boundary is **separating evidence from instructions**. Raw web pages, tool output, and any LLM summaries of them are untrusted evidence: they must not be executed as instructions or promoted directly into a Skill or similar long-term capability. LLM summarization is a transformation for readability and processing, not a sanitization step that makes the input harmless. The system should extract claims, source locations, and collection times into a fixed schema while preserving the raw content and provenance; extracted strings must never be executed as instructions. Model-produced confidence is likewise an unverified estimate, not an approval gate. Candidates must also pass deterministic schema, allowlist, and provenance checks before being submitted as version-controlled pull requests. A reviewer independent of the generator should compare the change with the original evidence, with human approval added for high-risk Skill promotion.
 
 The second boundary is **separating candidate capabilities from production capabilities**. New knowledge, Prompts, Skills, programs, and parameters first enter a candidate area that cannot serve real traffic. Newly generated code and external dependencies must also pass security checks such as sandbox execution, permission review, supply-chain scanning, and behavioral testing. Only after security checks and regression tests pass may a candidate serve real traffic as a production capability.
 
@@ -319,7 +329,7 @@ Continual evolution does not mean allowing knowledge, Prompts, and tools to grow
 - Delete knowledge invalidated by new evidence;
 - Retrain LoRA from the original base model.
 
-> **Experiment 8-6 ★★★: Evaluating Whether an Agent Is Continually Evolving**
+> **Experiment 8-7 ★★★: Evaluating Whether an Agent Is Continually Evolving**
 >
 > **Objective:** Distinguish among three long-term behaviors—saving one piece of feedback, merely appending forever, and genuinely updating, transferring, and retaining capabilities—so that repeatedly running the same tasks is not mistaken for continual learning.
 >
