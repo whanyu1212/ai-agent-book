@@ -93,16 +93,16 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y bash && \
     rm -rf /var/lib/apt/lists/*
 
-# Set up working directory
-WORKDIR /app
+# Copy the shared package and this service from the repository-root build context.
+COPY pyproject.toml README.md ./
+COPY agentbook ./agentbook
+COPY chapter4/execution-tools ./chapter4/execution-tools
 
-# Copy requirements and install Python packages
-COPY requirements.txt .
+WORKDIR /app/chapter4/execution-tools
+
+# The local requirements file installs the root package at ../../.
 RUN python3 -m pip install --upgrade pip setuptools wheel && \
     python3 -m pip install -r requirements.txt
-
-# Copy application files
-COPY . .
 
 # Expose default MCP stdio interface (no port needed for stdio)
 # The server communicates via stdin/stdout

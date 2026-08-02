@@ -4,14 +4,14 @@ services:
   # Execution Tools MCP Server
   execution-tools:
     build:
-      context: ./execution-tools
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: chapter4/execution-tools/Dockerfile
     container_name: mcp-execution-tools
     volumes:
       # Mount workspace for code execution
       - execution-workspace:/workspace
       # Mount local directory for development (optional)
-      - ./execution-tools:/app:ro
+      - ./execution-tools:/app/chapter4/execution-tools:ro
     environment:
       - WORKSPACE_DIR=/workspace
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -58,14 +58,14 @@ services:
   # Collaboration Tools MCP Server
   collaboration-tools:
     build:
-      context: ./collaboration-tools
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: chapter4/collaboration-tools/Dockerfile
     container_name: mcp-collaboration-tools
     volumes:
       # Mount workspace for file operations
       - collaboration-workspace:/workspace
       # Mount local directory for development (optional)
-      - ./collaboration-tools:/app:ro
+      - ./collaboration-tools:/app/chapter4/collaboration-tools:ro
     environment:
       - WORKSPACE_DIR=/workspace
       - OPENAI_API_KEY=${OPENAI_API_KEY}
