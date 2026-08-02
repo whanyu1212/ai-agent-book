@@ -589,12 +589,12 @@ Provide a JSON evaluation with:
 Respond with valid JSON only."""
             
             response = client.chat.completions.create(
-                model=model,
+                model=backend.model,
                 messages=[
                     {"role": "system", "content": "You are an evaluation judge. Evaluate if the agent's answer correctly addresses the user's question based on the criteria."},
                     {"role": "user", "content": eval_prompt}
                 ],
-                temperature=_reasoning_safe_temperature(model, 0.1),
+                temperature=_reasoning_safe_temperature(backend.model, 0.1),
                 response_format={"type": "json_object"}
             )
             

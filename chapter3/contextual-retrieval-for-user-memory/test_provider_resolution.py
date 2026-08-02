@@ -1,11 +1,14 @@
 """Offline compatibility contracts for contextual-retrieval provider setup."""
 
 import os
+import sys
 from types import SimpleNamespace
 
 import agent as agent_module
+import contextual_evaluator as evaluator_module
 import pytest
 import quickstart
+from agentbook.providers import Backend
 from config import LLMConfig
 
 
@@ -80,6 +83,25 @@ def test_agent_constructs_client_from_resolved_backend(monkeypatch):
 
     assert calls == [{"api_key": "test-kimi-key", "base_url": "https://api.moonshot.cn/v1"}]
     assert instance.model == "kimi-k3"
+
+
+def test_fallback_evaluator_uses_resolved_backend_model(monkeypatch):
+    backend = Backend("test-key", "https://provider.example/v1", "provider/model", "provider", False)
+    config = SimpleNamespace(llm=SimpleNamespace(resolve_backend=lambda: backend))
+    calls = []
+    response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content='{"reward": 1}'))])
+    client = SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **kwargs: calls.append(kwargs) or response))
+    )
+
+    monkeypatch.setattr(evaluator_module.Config, "from_env", lambda: config)
+    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=lambda **kwargs: client))
+    evaluator = object.__new__(evaluator_module.ContextualMemoryEvaluator)
+    test_case = SimpleNamespace(user_question="question", evaluation_criteria="criteria")
+
+    assert evaluator._fallback_llm_evaluation(test_case, "answer")["passed"] is True
+    assert calls[0]["model"] == backend.model
+    assert calls[0]["temperature"] == 0.1
 
 
 def test_quickstart_loads_dotenv_before_preflight(monkeypatch, tmp_path):
