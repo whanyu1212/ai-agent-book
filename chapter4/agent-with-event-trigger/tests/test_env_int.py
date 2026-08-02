@@ -4,6 +4,8 @@ Both server variants parsed AGENT_PORT with bare int() (one inside
 build_parser's default, one in main), so AGENT_PORT=abc crashed with an
 unhandled ValueError at startup. They now fall back to 8000 with a warning.
 """
+
+import logging
 import os
 import sys
 
@@ -28,6 +30,19 @@ def test_env_int_parses_valid_value(monkeypatch):
 def test_env_int_default_when_unset(monkeypatch):
     monkeypatch.delenv("AGENT_PORT", raising=False)
     assert server._env_int("AGENT_PORT", 8000) == 8000
+
+
+def test_env_int_logs_malformed_values(monkeypatch, caplog):
+    monkeypatch.setenv("AGENT_PORT", "abc")
+
+    with caplog.at_level(logging.WARNING):
+        assert server._env_int("AGENT_PORT", 8000) == 8000
+        assert server_fastapi._env_int("AGENT_PORT", 8000) == 8000
+
+    assert caplog.messages == [
+        "Invalid AGENT_PORT value: 'abc' (must be an integer); using default 8000",
+        "Invalid AGENT_PORT value: 'abc' (must be an integer); using default 8000",
+    ]
 
 
 def test_build_parser_survives_malformed_env(monkeypatch):
