@@ -1,4 +1,5 @@
 # Kimi Web Search Agent 依赖
+-e ../..
 
 # 核心依赖
 openai>=1.12.0  # OpenAI Python 客户端，用于调用 Kimi API
