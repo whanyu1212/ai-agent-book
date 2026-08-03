@@ -5,14 +5,14 @@ Default model is Kimi K3 (matching 实验 7-2 in the book); override via the
 `model` argument or the MOONSHOT_MODEL environment variable.
 """
 
-import os
 import json
 import re
 import time
 from datetime import datetime, timezone
 from typing import Dict, List, Tuple, Any, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass, replace
 import openai
+from agentbook.providers import resolve_backend
 from game_environment import TreasureHuntGame
 
 
@@ -22,30 +22,6 @@ def _reasoning_safe_temperature(model, requested=1.0):
     providers (Doubao, DeepSeek, older Moonshot) are unchanged."""
     m = str(model or "").lower().replace("/", "-")
     return 1 if ("kimi-k3" in m or "gpt-5" in m) else requested
-
-
-# Provider resolution lives in the shared agentbook package so every chapter
-# stays consistent; see agentbook/providers.py. The fallback keeps this
-# experiment runnable from a checkout where agentbook is not installed.
-try:
-    from agentbook.providers import (
-        SUPPORTED_PROVIDERS,
-        map_model_to_openrouter,
-        resolve_backend,
-        resolve_llm_backend,
-    )
-except ImportError:  # pragma: no cover - exercised only without the package
-    import sys as _sys
-
-    _sys.path.insert(
-        0, str(__import__("pathlib").Path(__file__).resolve().parents[2])
-    )
-    from agentbook.providers import (
-        SUPPORTED_PROVIDERS,
-        map_model_to_openrouter,
-        resolve_backend,
-        resolve_llm_backend,
-    )
 
 
 @dataclass
@@ -80,18 +56,22 @@ class LLMAgent:
             temperature: Sampling temperature for generation
             max_experiences: Maximum number of experiences to store
         """
-        # Set up API client (Moonshot primary, OpenRouter universal fallback)
-        primary_key = api_key or os.getenv("MOONSHOT_API_KEY")
-        self.api_key, resolved_base_url, self.model, self.using_openrouter = \
-            resolve_llm_backend(primary_key, base_url, model)
-        self.base_url = resolved_base_url
+        # Moonshot is primary; the shared resolver supplies the OpenRouter fallback.
+        self.backend = resolve_backend("kimi", model=model, api_key=api_key)
+        if not self.backend.using_openrouter:
+            # This experiment has always accepted a direct Moonshot-compatible URL.
+            self.backend = replace(self.backend, base_url=base_url)
+        self.api_key = self.backend.api_key
+        self.base_url = self.backend.base_url
+        self.model = self.backend.model
+        self.using_openrouter = self.backend.using_openrouter
         self.provider = "openrouter" if self.using_openrouter else "moonshot"
         if self.using_openrouter:
             print(f"ℹ️  MOONSHOT_API_KEY not set; routing via OpenRouter (model: {self.model})")
 
         self.client = openai.OpenAI(
             api_key=self.api_key,
-            base_url=resolved_base_url
+            base_url=self.base_url
         )
         self.temperature = temperature
         

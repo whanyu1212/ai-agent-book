@@ -1,11 +1,10 @@
 name: provider adoption tests
 
-# Chapters 2, 3, and 4 resolve endpoints, credentials and model ids through
+# Chapters 1, 2, 3, and 4 resolve endpoints, credentials and model ids through
 # agentbook.providers rather than through per-experiment copies of the old
 # openrouter_fallback.py. That makes a change to agentbook/ able to break
 # several experiments at once, in code paths none of their own tests would flag as
-# related -- so the shared package is a trigger here, exactly as it is for
-# chapter 1 in web-search-agent-tests.yml.
+# related -- so the shared package is a trigger here.
 
 on:
   pull_request:
@@ -15,6 +14,7 @@ on:
       - "chapter2/kv-cache/**"
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
+      - "chapter1/learning-from-experience/**"
       - "chapter3/agentic-rag/**"
       - "chapter3/agentic-rag-for-user-memory/**"
       - "chapter3/contextual-retrieval/**"
@@ -31,6 +31,7 @@ on:
       - "chapter2/kv-cache/**"
       - "chapter2/prompt-injection/**"
       - "chapter2/system-hint/**"
+      - "chapter1/learning-from-experience/**"
       - "chapter3/agentic-rag/**"
       - "chapter3/agentic-rag-for-user-memory/**"
       - "chapter3/contextual-retrieval/**"
@@ -260,6 +261,37 @@ jobs:
           test_provider_resolution.py
           test_client_initialization.py
           test_request_policy.py
+
+  learning-from-experience:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the package
+        working-directory: chapter1/learning-from-experience
+        run: >-
+          python -m pip install
+          -r requirements.txt
+          "pytest>=8.3"
+
+      - name: Run learning-from-experience provider tests
+        working-directory: chapter1/learning-from-experience
+        env:
+          MOONSHOT_API_KEY: ""
+          KIMI_API_KEY: ""
+          KIMI_BASE_URL: ""
+          OPENROUTER_API_KEY: ""
+          OPENROUTER_BASE_URL: ""
+          OPENROUTER_MODEL: ""
+        run: >-
+          python -m pytest -q
+          tests
+          test_experiment_7_2_evidence.py
 
   active-tool-discovery:
     runs-on: ubuntu-latest
