@@ -2,6 +2,9 @@
 
 from unittest.mock import Mock
 
+import pytest
+
+import agent as agent_module
 from agent import WebSearchAgent, _reasoning_safe_temperature, format_trace_step
 
 
@@ -31,6 +34,77 @@ def build_agent(*choices):
     instance._chat = Mock(side_effect=choices)
     instance._execute_formula = Mock(return_value="encrypted formula output")
     return instance
+
+
+class RecordingOpenAI:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+
+def test_constructor_uses_moonshot_key_and_custom_base_url(monkeypatch):
+    monkeypatch.setenv("MOONSHOT_API_KEY", "moonshot-key")
+    monkeypatch.setattr(agent_module, "OpenAI", RecordingOpenAI)
+
+    instance = WebSearchAgent(base_url="https://moonshot.test/v1")
+
+    assert instance.client.kwargs["api_key"] == "moonshot-key"
+    assert instance.client.kwargs["base_url"] == "https://moonshot.test/v1"
+    assert instance.client.kwargs["timeout"] == instance._request_timeout
+    assert instance.model == "kimi-k3"
+    assert instance.using_openrouter is False
+    assert instance._formula_tools is None
+
+
+def test_constructor_accepts_legacy_kimi_key(monkeypatch):
+    monkeypatch.setenv("KIMI_API_KEY", "legacy-kimi-key")
+    monkeypatch.setattr(agent_module, "OpenAI", RecordingOpenAI)
+
+    instance = WebSearchAgent()
+
+    assert instance.client.kwargs["api_key"] == "legacy-kimi-key"
+    assert instance.using_openrouter is False
+
+
+def test_constructor_explicit_key_wins_over_environment(monkeypatch):
+    monkeypatch.setenv("MOONSHOT_API_KEY", "environment-key")
+    monkeypatch.setattr(agent_module, "OpenAI", RecordingOpenAI)
+
+    instance = WebSearchAgent(api_key="explicit-key")
+
+    assert instance.client.kwargs["api_key"] == "explicit-key"
+
+
+def test_constructor_uses_openrouter_without_leaking_moonshot_base_url(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-key")
+    monkeypatch.setenv("OPENROUTER_BASE_URL", "https://openrouter.test/v1")
+    monkeypatch.setattr(agent_module, "OpenAI", RecordingOpenAI)
+
+    instance = WebSearchAgent(base_url="https://moonshot.test/v1")
+
+    assert instance.client.kwargs["api_key"] == "openrouter-key"
+    assert instance.client.kwargs["base_url"] == "https://openrouter.test/v1"
+    assert instance.model == "moonshotai/kimi-k2.6"
+    assert instance.using_openrouter is True
+    assert instance._get_tools() == []
+
+
+def test_constructor_routes_gpt5_through_openrouter(monkeypatch):
+    monkeypatch.setenv("MOONSHOT_API_KEY", "moonshot-key")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-key")
+    monkeypatch.setattr(agent_module, "OpenAI", RecordingOpenAI)
+
+    instance = WebSearchAgent(model="gpt-5.6-luna")
+
+    assert instance.client.kwargs["api_key"] == "openrouter-key"
+    assert instance.model == "openai/gpt-5.6-luna"
+    assert instance.using_openrouter is True
+
+
+def test_constructor_requires_a_provider_key(monkeypatch):
+    monkeypatch.setattr(agent_module, "OpenAI", RecordingOpenAI)
+
+    with pytest.raises(ValueError, match="No API key found"):
+        WebSearchAgent()
 
 
 def test_format_trace_step_formats_action_with_unicode_arguments():

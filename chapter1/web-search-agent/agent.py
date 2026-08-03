@@ -4,11 +4,12 @@ Kimi Web Search Agent
 """
 
 import json
+from dataclasses import replace
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
+from agentbook.providers import resolve_backend
 from openai.types.chat.chat_completion import Choice
 import logging
-import os
 import requests
 import time
 
@@ -104,12 +105,15 @@ class WebSearchAgent:
             model: 使用的模型名称（默认 kimi-k3）
             verbose: 是否实时打印 ReAct 轨迹（思考/行动/观察）
         """
-        # 优先使用传入的 api_key，否则从环境变量获取
-        # Moonshot 为主，OpenRouter 为通用兜底（当 MOONSHOT_API_KEY 缺失时启用）
-        from config import resolve_llm_backend, Config
-        primary_key = api_key or os.environ.get("MOONSHOT_API_KEY") or os.environ.get("KIMI_API_KEY")
-        resolved_key, resolved_base_url, model, self.using_openrouter = \
-            resolve_llm_backend(primary_key, base_url, model)
+        # Moonshot is primary; the shared resolver supplies the OpenRouter fallback.
+        from config import Config
+
+        self.backend = resolve_backend("kimi", model=model, api_key=api_key)
+        if not self.backend.using_openrouter:
+            # This CLI has always allowed a direct Moonshot-compatible endpoint.
+            self.backend = replace(self.backend, base_url=base_url)
+        self.using_openrouter = self.backend.using_openrouter
+        model = self.backend.model
         if self.using_openrouter:
             logger.info(
                 f"MOONSHOT_API_KEY 未设置，改用 OpenRouter 兜底（模型: {model}）。"
@@ -118,13 +122,13 @@ class WebSearchAgent:
             )
 
         self.client = OpenAI(
-            api_key=resolved_key,
-            base_url=resolved_base_url,
+            api_key=self.backend.api_key,
+            base_url=self.backend.base_url,
             # 应用配置的搜索超时，避免后端挂起时请求默认阻塞约 10 分钟
             timeout=Config.SEARCH_TIMEOUT,
         )
-        self._api_key = resolved_key
-        self.base_url = resolved_base_url
+        self._api_key = self.backend.api_key
+        self.base_url = self.backend.base_url
         self.model = model
         self.verbose = verbose
         self.conversation_history = []

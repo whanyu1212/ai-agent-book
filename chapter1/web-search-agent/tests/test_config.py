@@ -1,7 +1,7 @@
 """Unit tests for model mapping and provider selection."""
 
 import pytest
-from config import map_model_to_openrouter, resolve_llm_backend
+from agentbook.providers import map_model_to_openrouter, resolve_backend
 
 
 @pytest.mark.parametrize(
@@ -36,43 +36,34 @@ def test_unknown_model_is_kept_when_not_substituting(monkeypatch):
 
 
 def test_primary_provider_is_preserved_when_its_key_exists():
-    assert resolve_llm_backend(
-        "moonshot-key", "https://moonshot.test/v1", "kimi-k3"
-    ) == (
-        "moonshot-key",
-        "https://moonshot.test/v1",
-        "kimi-k3",
-        False,
-    )
+    backend = resolve_backend("kimi", model="kimi-k3", api_key="moonshot-key")
+    assert backend.api_key == "moonshot-key"
+    assert backend.base_url == "https://api.moonshot.cn/v1"
+    assert backend.model == "kimi-k3"
+    assert backend.using_openrouter is False
 
 
 def test_openrouter_is_used_when_primary_key_is_missing(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-key")
     monkeypatch.setenv("OPENROUTER_BASE_URL", "https://openrouter.test/v1")
 
-    assert resolve_llm_backend(None, "https://moonshot.test/v1", "kimi-k3") == (
-        "openrouter-key",
-        "https://openrouter.test/v1",
-        "moonshotai/kimi-k2.6",
-        True,
-    )
+    backend = resolve_backend("kimi", model="kimi-k3")
+    assert backend.api_key == "openrouter-key"
+    assert backend.base_url == "https://openrouter.test/v1"
+    assert backend.model == "moonshotai/kimi-k2.6"
+    assert backend.using_openrouter is True
 
 
 def test_gpt5_prefers_openrouter_when_both_keys_exist(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-key")
 
-    resolved = resolve_llm_backend(
-        "primary-key", "https://primary.test/v1", "gpt-5.6-luna"
-    )
-
-    assert resolved == (
-        "openrouter-key",
-        "https://openrouter.ai/api/v1",
-        "openai/gpt-5.6-luna",
-        True,
-    )
+    backend = resolve_backend("kimi", model="gpt-5.6-luna", api_key="primary-key")
+    assert backend.api_key == "openrouter-key"
+    assert backend.base_url == "https://openrouter.ai/api/v1"
+    assert backend.model == "openai/gpt-5.6-luna"
+    assert backend.using_openrouter is True
 
 
 def test_provider_resolution_requires_a_key():
     with pytest.raises(ValueError, match="No API key found"):
-        resolve_llm_backend(None, "https://moonshot.test/v1", "kimi-k3")
+        resolve_backend("kimi", model="kimi-k3")
