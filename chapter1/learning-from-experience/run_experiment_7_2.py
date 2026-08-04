@@ -27,6 +27,17 @@ from experiment import ExperimentRunner
 
 
 ROOT = Path(__file__).resolve().parent
+CANONICAL_MOONSHOT_BASE_URL = "https://api.moonshot.cn/v1"
+
+
+def _is_direct_official_kimi(backend: dict) -> bool:
+    """Require the public Moonshot endpoint for exact Kimi K3 evidence."""
+    return (
+        backend.get("provider") == "moonshot"
+        and backend.get("base_url") == CANONICAL_MOONSHOT_BASE_URL
+        and backend.get("model") == "kimi-k3"
+        and backend.get("using_openrouter") is False
+    )
 
 
 def _sha256(path: Path) -> str:
@@ -137,11 +148,7 @@ def main() -> int:
     )
     no_api_errors = all(not record.get("error") for record in api_records)
     no_fallbacks = all(not record.get("fallback_used") for record in api_records)
-    direct_exact_kimi = (
-        raw.get("backend", {}).get("provider") == "moonshot"
-        and raw.get("backend", {}).get("model") == "kimi-k3"
-        and raw.get("backend", {}).get("using_openrouter") is False
-    )
+    direct_exact_kimi = _is_direct_official_kimi(raw.get("backend", {}))
     response_models = sorted(
         {
             (record.get("response") or {}).get("model")

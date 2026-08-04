@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from experiment import ExperimentRunner
 from game_environment import TreasureHuntGame
 from llm_agent import LLMAgent
-from run_experiment_7_2 import _write_json
+from run_experiment_7_2 import _is_direct_official_kimi, _write_json
 
 
 class _Usage:
@@ -96,3 +96,17 @@ def test_evidence_writer_serializes_numpy_scalars(tmp_path):
         "gate": True,
         "count": 17,
     }
+
+
+def test_official_kimi_evidence_requires_the_canonical_endpoint():
+    backend = {
+        "provider": "moonshot",
+        "base_url": "https://api.moonshot.cn/v1",
+        "model": "kimi-k3",
+        "using_openrouter": False,
+    }
+
+    assert _is_direct_official_kimi(backend) is True
+
+    backend["base_url"] = "https://moonshot.test/v1"
+    assert _is_direct_official_kimi(backend) is False

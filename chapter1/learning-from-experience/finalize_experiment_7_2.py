@@ -10,6 +10,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from run_experiment_7_2 import _is_direct_official_kimi
 from run_experiment_7_2 import ROOT, _git_revision, _sha256, _write_json
 
 
@@ -46,9 +47,7 @@ def main() -> int:
         if record.get("response", {}).get("model")
     })
     direct_exact_kimi = (
-        raw.get("backend", {}).get("provider") == "moonshot"
-        and raw.get("backend", {}).get("model") == "kimi-k3"
-        and raw.get("backend", {}).get("using_openrouter") is False
+        _is_direct_official_kimi(raw.get("backend", {}))
         and response_models == ["kimi-k3"]
     )
     protocol_gates = {
