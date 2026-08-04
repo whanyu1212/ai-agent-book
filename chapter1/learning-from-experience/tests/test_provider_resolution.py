@@ -2,7 +2,10 @@
 
 import pytest
 
+import demo
+import experiment
 import llm_agent
+import quick_demo
 from llm_agent import LLMAgent
 
 
@@ -34,6 +37,16 @@ def test_constructor_accepts_legacy_kimi_key(monkeypatch):
 
     assert agent.client.kwargs["api_key"] == "legacy-kimi-key"
     assert agent.provider == "moonshot"
+
+
+def test_constructor_honors_kimi_base_url(monkeypatch):
+    monkeypatch.setenv("KIMI_API_KEY", "legacy-kimi-key")
+    monkeypatch.setenv("KIMI_BASE_URL", "https://moonshot.test/v1")
+    monkeypatch.setattr(llm_agent.openai, "OpenAI", RecordingOpenAI)
+
+    agent = LLMAgent()
+
+    assert agent.client.kwargs["base_url"] == "https://moonshot.test/v1"
 
 
 def test_constructor_explicit_key_wins_over_environment(monkeypatch):
@@ -78,3 +91,28 @@ def test_constructor_requires_a_provider_key(monkeypatch):
 
     with pytest.raises(ValueError, match="No API key found"):
         LLMAgent()
+
+
+@pytest.mark.parametrize(
+    ("module", "entrypoint"),
+    [
+        (demo, "watch_llm_agent"),
+        (quick_demo, "run_llm_demo"),
+        (experiment, "run_llm_experiment"),
+    ],
+)
+def test_legacy_kimi_key_reaches_runnable_entrypoints(monkeypatch, module, entrypoint):
+    class InitializedAgent(Exception):
+        pass
+
+    def initialized(*args, **kwargs):
+        raise InitializedAgent
+
+    monkeypatch.setenv("KIMI_API_KEY", "legacy-kimi-key")
+    monkeypatch.setattr(module, "LLMAgent", initialized)
+
+    with pytest.raises(InitializedAgent):
+        if module is experiment:
+            getattr(module.ExperimentRunner(), entrypoint)()
+        else:
+            getattr(module, entrypoint)()

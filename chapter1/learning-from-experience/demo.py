@@ -124,10 +124,11 @@ def watch_llm_agent():
     
     # Check API key
     api_key = os.getenv("MOONSHOT_API_KEY")
-    if not api_key and not os.getenv("OPENROUTER_API_KEY"):
-        print("\nError: MOONSHOT_API_KEY not set.")
+    if not api_key and not os.getenv("KIMI_API_KEY") and not os.getenv("OPENROUTER_API_KEY"):
+        print("\nError: no Kimi or OpenRouter API key is set.")
         print("Please set your Kimi API key:")
         print("  export MOONSHOT_API_KEY='your-key-here'")
+        print("  # or export KIMI_API_KEY='your-key-here'")
         print("Or set OPENROUTER_API_KEY as a universal fallback.")
         return
     

@@ -43,7 +43,7 @@ class LLMAgent:
     def __init__(self,
                  api_key: str = None,
                  model: str = "kimi-k3",  # Kimi K3 (see 实验 7-2)
-                 base_url: str = "https://api.moonshot.cn/v1",
+                 base_url: str | None = None,
                  temperature: float = 0.7,
                  max_experiences: int = 50):
         """
@@ -58,7 +58,7 @@ class LLMAgent:
         """
         # Moonshot is primary; the shared resolver supplies the OpenRouter fallback.
         self.backend = resolve_backend("kimi", model=model, api_key=api_key)
-        if not self.backend.using_openrouter:
+        if base_url is not None and not self.backend.using_openrouter:
             # This experiment has always accepted a direct Moonshot-compatible URL.
             self.backend = replace(self.backend, base_url=base_url)
         self.api_key = self.backend.api_key

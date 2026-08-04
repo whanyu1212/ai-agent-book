@@ -175,9 +175,10 @@ class ExperimentRunner:
 
         # Check for API key
         api_key = os.getenv("MOONSHOT_API_KEY")
-        if not api_key and not os.getenv("OPENROUTER_API_KEY"):
-            print("\n⚠️ Warning: MOONSHOT_API_KEY not set. Skipping LLM experiment.")
+        if not api_key and not os.getenv("KIMI_API_KEY") and not os.getenv("OPENROUTER_API_KEY"):
+            print("\n⚠️ Warning: no Kimi or OpenRouter API key is set. Skipping LLM experiment.")
             print("📝 Please set your Kimi API key: export MOONSHOT_API_KEY='your-key-here'")
+            print("   Or: export KIMI_API_KEY='your-key-here'")
             print("🔗 Get your key at: https://platform.moonshot.cn/")
             print("💡 Or set OPENROUTER_API_KEY as a universal fallback.")
             return None
