@@ -5,12 +5,26 @@ on:
     paths:
       - "pyproject.toml"
       - "uv.lock"
+      - "chapter1/**/requirements*.txt"
+      - "chapter2/**/requirements*.txt"
+      - "chapter3/**/requirements*.txt"
+      - "docs/DEPENDENCY_MIGRATION.md"
+      - "docs/dependency-migration-ledger.toml"
+      - "scripts/check_dependency_ledger.py"
+      - "tests/test_dependency_ledger.py"
       - ".github/workflows/dependency-resolution.yml"
   push:
     branches: [main]
     paths:
       - "pyproject.toml"
       - "uv.lock"
+      - "chapter1/**/requirements*.txt"
+      - "chapter2/**/requirements*.txt"
+      - "chapter3/**/requirements*.txt"
+      - "docs/DEPENDENCY_MIGRATION.md"
+      - "docs/dependency-migration-ledger.toml"
+      - "scripts/check_dependency_ledger.py"
+      - "tests/test_dependency_ledger.py"
       - ".github/workflows/dependency-resolution.yml"
   workflow_dispatch: {}
 
@@ -18,6 +32,21 @@ permissions:
   contents: read
 
 jobs:
+  ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test dependency ledger checker
+        run: python -m unittest tests.test_dependency_ledger
+
+      - name: Check dependency migration ledger
+        run: python scripts/check_dependency_ledger.py
+
   resolve:
     runs-on: ubuntu-latest
     strategy:

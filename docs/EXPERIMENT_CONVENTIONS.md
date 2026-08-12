@@ -57,6 +57,9 @@ the runnable entry point, tests, fixtures, and generated outputs obvious.
 
 ## Installation Docs
 
+- Use the [dependency migration ledger](DEPENDENCY_MIGRATION.md) before
+  changing or removing an experiment-level `requirements.txt`; it records the
+  file's consumers, root-extra coverage, and intended disposition.
 - README setup should prefer the root chapter extra, for example
   `uv sync --locked --python 3.12 --extra chN`.
 - Activate the root `.venv` before changing into the experiment directory.

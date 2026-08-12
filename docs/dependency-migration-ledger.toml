@@ -1,0 +1,359 @@
+version = 1
+
+[scope]
+chapters = [1, 2, 3]
+excluded_globs = ["chapter2/prompt-engineering/tau_bench/**"]
+
+[[entry]]
+path = "chapter1/context/requirements.txt"
+root_extra = "ch1"
+coverage = "partial"
+disposition = "reconcile"
+consumers = ["chapter1/context/README.md"]
+related_contracts = []
+uncovered_packages = ["black", "flake8"]
+constraint_notes = []
+rationale = "Runtime and pytest dependencies are covered, but the legacy file also installs two superseded lint/format tools."
+follow_up = "Decide whether legacy Black and Flake8 commands remain supported, then align the README and remove or retain the file explicitly."
+
+[[entry]]
+path = "chapter1/learning-from-experience/requirements.txt"
+root_extra = "ch1"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter1/learning-from-experience/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "Every declared package is supplied by the shared Chapter 1 environment."
+follow_up = "Remove the compatibility install path and file after validating the documented offline tests and demos with ch1 and dev."
+
+[[entry]]
+path = "chapter1/search-codegen/requirements.txt"
+root_extra = "ch1"
+coverage = "partial"
+disposition = "reconcile"
+consumers = ["chapter1/search-codegen/README.md"]
+related_contracts = []
+uncovered_packages = ["black", "flake8", "mypy"]
+constraint_notes = []
+rationale = "Runtime and pytest dependencies are covered, while three legacy development tools are outside the root dev extra."
+follow_up = "Audit actual formatting, lint, and typing commands; migrate supported tools to dev or remove stale declarations before deleting the file."
+
+[[entry]]
+path = "chapter1/web-search-agent/requirements.txt"
+root_extra = "ch1"
+coverage = "partial"
+disposition = "reconcile"
+consumers = [
+  ".github/workflows/web-search-agent-tests.yml",
+  "chapter1/web-search-agent/README.md",
+]
+related_contracts = []
+uncovered_packages = ["aiohttp", "black", "pylint"]
+constraint_notes = []
+rationale = "The workflow still installs and caches this file; aiohttp and two development tools are not supplied by ch1 plus dev."
+follow_up = "Separate runtime from test tooling, update the workflow to install root extras, and preserve the existing Black check before removing the file."
+
+[[entry]]
+path = "chapter2/agent-skills-ppt/requirements.txt"
+root_extra = "ch2"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter2/agent-skills-ppt/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "The editable root package and all direct runtime dependencies are covered by ch2."
+follow_up = "Validate the offline PPTX generator and tests under ch2 plus dev, then remove the compatibility file and README path."
+
+[[entry]]
+path = "chapter2/attention_visualization/requirements.txt"
+root_extra = "ch2"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter2/attention_visualization/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "The shared visualization and torch capability groups cover the complete Python dependency list."
+follow_up = "Validate the Python service separately from the npm frontend, then remove only the Python compatibility file and references."
+
+[[entry]]
+path = "chapter2/context-compression/requirements.txt"
+root_extra = "ch2"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter2/context-compression/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All runtime dependencies and the editable root package are covered by ch2."
+follow_up = "Run the offline provider regressions with ch2 plus dev, then remove the file and compatibility instructions."
+
+[[entry]]
+path = "chapter2/kv-cache/requirements.txt"
+root_extra = "ch2"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter2/kv-cache/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All declared runtime dependencies and the editable root package are covered by ch2."
+follow_up = "First classify live credential-dependent scripts as manual checks, then validate the remaining offline path and remove the compatibility file."
+
+[[entry]]
+path = "chapter2/local_llm_serving/requirements.txt"
+root_extra = "ch2"
+coverage = "partial"
+disposition = "retain-isolated"
+consumers = [
+  "chapter2/local_llm_serving/README.md",
+  "chapter2/local_llm_serving/check_compatibility.py",
+  "chapter2/local_llm_serving/setup.sh",
+]
+related_contracts = []
+uncovered_packages = ["accelerate", "python-weather", "vllm"]
+constraint_notes = []
+rationale = "The legacy setup script creates an independent environment and combines optional Linux GPU packages with the cross-platform Ollama path."
+follow_up = "Keep an explicit isolated contract until setup.sh is redesigned around separate ch2 and vllm paths; remove unused python-weather if source validation confirms it is obsolete."
+
+[[entry]]
+path = "chapter2/prompt-engineering/requirements.txt"
+root_extra = "ch2"
+coverage = "partial"
+disposition = "retain-isolated"
+consumers = ["chapter2/prompt-engineering/README.md"]
+related_contracts = ["chapter2/prompt-engineering/setup.py"]
+uncovered_packages = ["google-generativeai", "termcolor"]
+constraint_notes = []
+rationale = "The experiment is also an independently packaged tau_bench tree and still uses the legacy Google SDK contract."
+follow_up = "Reconcile requirements.txt with setup.py and decide whether to migrate tau_bench to google-genai before changing the isolated package contract."
+
+[[entry]]
+path = "chapter2/prompt-injection/requirements.txt"
+root_extra = "ch2"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter2/prompt-injection/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "The editable root reference and all runtime dependencies are covered by ch2."
+follow_up = "Validate the existing offline robustness tests under ch2 plus dev, then remove the file and compatibility instructions."
+
+[[entry]]
+path = "chapter2/system-hint/requirements.txt"
+root_extra = "ch2"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter2/system-hint/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "The editable root reference and all runtime dependencies are covered by ch2."
+follow_up = "Run the offline system-hint tests with ch2 plus dev, then remove the compatibility file and README references."
+
+[[entry]]
+path = "chapter3/agentic-rag-for-user-memory/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = [
+  "chapter3/agentic-rag-for-user-memory/README.md",
+  "chapter3/agentic-rag-for-user-memory/RETRIEVAL_PIPELINE_INTEGRATION.md",
+]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All runtime dependencies are covered by the Chapter 3 capability groups."
+follow_up = "Validate the default and integration entrypoints with ch3, update both documents, and remove the compatibility file."
+
+[[entry]]
+path = "chapter3/agentic-rag/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = [
+  "chapter3/agentic-rag/README.md",
+  "chapter3/agentic-rag/quickstart.py",
+  "chapter3/agentic-rag/test_simple.py",
+]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All declared dependencies are covered, but two scripts still offer automatic or diagnostic pip installation."
+follow_up = "Remove runtime self-install behavior in favor of the documented root environment, validate the offline retriever, then delete the file."
+
+[[entry]]
+path = "chapter3/contextual-retrieval-for-user-memory/requirements.txt"
+root_extra = "ch3"
+coverage = "partial"
+disposition = "reconcile"
+consumers = [
+  "chapter3/contextual-retrieval-for-user-memory/README.md",
+  "chapter3/contextual-retrieval-for-user-memory/RETRIEVAL_PIPELINE_INTEGRATION.md",
+]
+related_contracts = []
+uncovered_packages = ["black", "click", "flake8"]
+constraint_notes = []
+rationale = "Runtime dependencies are mostly covered, while a CLI package and two legacy development tools remain outside ch3 plus dev."
+follow_up = "Confirm whether Click is used and whether Black or Flake8 commands are still supported, then align root extras or remove stale declarations."
+
+[[entry]]
+path = "chapter3/contextual-retrieval/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = [
+  "chapter3/contextual-retrieval/README.md",
+  "chapter3/contextual-retrieval/test_simple.py",
+]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All declared runtime dependencies are covered by ch3."
+follow_up = "Replace the diagnostic requirements instruction, validate the offline retrieval tests, and remove the file and compatibility README path."
+
+[[entry]]
+path = "chapter3/dense-embedding/requirements.txt"
+root_extra = "ch3"
+coverage = "partial"
+disposition = "reconcile"
+consumers = [
+  "chapter3/dense-embedding/README.md",
+  "chapter3/dense-embedding/start_service.sh",
+]
+related_contracts = []
+uncovered_packages = ["sentencepiece"]
+constraint_notes = []
+rationale = "The service stack is covered except for sentencepiece, and start_service.sh still installs the local file dynamically."
+follow_up = "Prove whether the selected embedding models require sentencepiece, add it to the appropriate root capability if needed, and stop runtime installation before removing the file."
+
+[[entry]]
+path = "chapter3/log-sanitization/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = [
+  ".github/workflows/provider-adoption-tests.yml",
+  "chapter3/log-sanitization/README.md",
+]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "The root providers and rag groups cover Ollama and PyYAML, although CI still installs them as an explicit workaround."
+follow_up = "Remove the CI-only installation step, validate offline tests from the root package install, then remove the local file and compatibility README path."
+
+[[entry]]
+path = "chapter3/mem0/requirements.txt"
+root_extra = "ch3"
+coverage = "partial"
+disposition = "reconcile"
+consumers = [
+  "chapter3/mem0/README.md",
+  "chapter3/mem0/test_simple.py",
+]
+related_contracts = []
+uncovered_packages = ["click", "qdrant-client", "typer"]
+constraint_notes = []
+rationale = "The shared memory stack covers the primary demo, but optional CLI and Qdrant packages remain local."
+follow_up = "Map Click, Typer, and Qdrant usage to concrete entrypoints; add a narrowly named capability or preserve an isolated variant before removing the file."
+
+[[entry]]
+path = "chapter3/memobase/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = [
+  "chapter3/memobase/README.md",
+  "chapter3/memobase/profile_demo.py",
+  "chapter3/memobase/quickstart.py",
+]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All client dependencies are covered by ch3; the external Memobase server remains a separate system prerequisite."
+follow_up = "Update script diagnostics to point to the root install, validate client error paths without a server, and remove the compatibility file."
+
+[[entry]]
+path = "chapter3/retrieval-pipeline/requirements.txt"
+root_extra = "ch3"
+coverage = "divergent"
+disposition = "retain-isolated"
+consumers = ["chapter3/retrieval-pipeline/README.md"]
+related_contracts = []
+uncovered_packages = ["typing-extensions"]
+constraint_notes = ["Exact legacy pins for FastAPI, HTTPX, Pydantic, PyTorch, Transformers, and model libraries are below or incompatible with the shared ch3 floors."]
+rationale = "The three-service pipeline is a reproducibility environment with tightly coupled model and API versions."
+follow_up = "Keep the isolated contract until the dense, sparse, and reranker services are validated together against a deliberate updated pin set."
+
+[[entry]]
+path = "chapter3/sparse-embedding/requirements.txt"
+root_extra = "ch3"
+coverage = "divergent"
+disposition = "reconcile"
+consumers = ["chapter3/sparse-embedding/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = ["Exact FastAPI, Uvicorn, Pydantic, and python-multipart pins are older than the shared serve capability floors."]
+rationale = "Package names are covered, but exact legacy service pins do not represent the shared Chapter 3 environment."
+follow_up = "Run the offline CLI and service tests against the root versions, then remove exact pins or retain an explicitly justified service contract."
+
+[[entry]]
+path = "chapter3/structured-index/requirements.txt"
+root_extra = "ch3"
+coverage = "divergent"
+disposition = "retain-isolated"
+consumers = ["chapter3/structured-index/README.md"]
+related_contracts = []
+uncovered_packages = [
+  "azure-search-documents",
+  "azure-storage-blob",
+  "graphrag",
+  "pyarrow",
+  "raptor-rag",
+]
+constraint_notes = ["The exact RAPTOR and GraphRAG packages and optional Azure integration form a specialized parity environment outside the ordinary ch3 aggregate."]
+rationale = "The README explicitly distinguishes the shared demo path from exact legacy parity with specialized indexing integrations."
+follow_up = "Keep this file isolated until each optional backend has a documented command and smoke test; do not widen the default ch3 environment with unused integrations."
+
+[[entry]]
+path = "chapter3/structured-knowledge-extraction/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = ["chapter3/structured-knowledge-extraction/README.md"]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All declared dependencies are supplied by ch3."
+follow_up = "Validate the offline extraction regressions and documented entrypoint, then remove the compatibility file and README instruction."
+
+[[entry]]
+path = "chapter3/user-memory-evaluation/requirements.txt"
+root_extra = "ch3"
+coverage = "partial"
+disposition = "reconcile"
+consumers = ["chapter3/user-memory-evaluation/README.md"]
+related_contracts = []
+uncovered_packages = ["typing-extensions"]
+constraint_notes = []
+rationale = "The root environment covers runtime libraries except for an explicit typing-extensions declaration."
+follow_up = "Confirm supported Python versions no longer require the backport directly, validate the evaluation CLI, then remove or add the dependency intentionally."
+
+[[entry]]
+path = "chapter3/user-memory/requirements.txt"
+root_extra = "ch3"
+coverage = "complete"
+disposition = "migrate"
+consumers = [
+  "chapter3/user-memory/README.md",
+  "chapter3/user-memory/setup.sh",
+]
+related_contracts = []
+uncovered_packages = []
+constraint_notes = []
+rationale = "All declared dependencies are covered, but setup.sh still creates a separate environment and installs the local file."
+follow_up = "Redesign or retire setup.sh in favor of the root environment, retain its data-directory setup separately, validate tests, and remove the file."
